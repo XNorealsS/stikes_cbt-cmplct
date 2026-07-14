@@ -27,7 +27,7 @@
     <div class="space-y-10">
         @forelse ($grouped as $pertemuan => $items)
         <div class="space-y-4">
-            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest pl-2.5 border-l-4 border-primary bg-slate-50 py-1 rounded">
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest pl-2.5 border-l-4 border-primary bg-slate-50 py-1">
                 @if(is_numeric($pertemuan))
                     Pertemuan / Sesi {{ $pertemuan }}
                 @else
@@ -35,56 +35,125 @@
                 @endif
             </h3>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                @foreach ($items as $materi)
-                @php
-                    $isViewed = $materi->views->isNotEmpty();
-                @endphp
-                <div class="bg-white rounded-2xl border border-gray-150 shadow-sm p-6 flex flex-col justify-between space-y-4 hover:shadow-md hover:border-gray-200 transition">
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-start gap-2">
-                            <span class="inline-block px-2.5 py-0.5 text-[9px] font-extrabold rounded-full bg-blue-50 text-primary border border-blue-100 uppercase font-mono">
-                                {{ $materi->course->code }}
-                            </span>
-                            <div class="flex gap-1.5">
-                                <span id="read-badge-{{ $materi->id }}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold border {{ $isViewed ? 'bg-emerald-50 text-emerald-800 border-emerald-100' : 'bg-amber-50 text-amber-800 border-amber-150 animate-pulse' }}">
-                                    <i class="fa-solid {{ $isViewed ? 'fa-eye' : 'fa-eye-slash' }}"></i>
-                                    <span class="badge-text">{{ $isViewed ? 'Sudah Dibaca' : 'Belum Dibaca' }}</span>
-                                </span>
-                                <span class="text-[9px] bg-slate-50 border border-slate-200 text-slate-500 font-bold px-2 py-0.5 rounded uppercase">
-                                    {{ $materi->tipe }}
-                                </span>
-                            </div>
-                        </div>
-                        <h2 class="text-lg font-bold text-gray-900 tracking-tight leading-snug">{{ $materi->judul }}</h2>
-                        <p class="text-[10px] text-gray-400">Dosen: <strong class="text-gray-700 font-semibold">{{ $materi->user->name }}</strong> | Rilis: {{ $materi->tanggal_tayang ? $materi->tanggal_tayang->format('d M Y') : 'Langsung' }}</p>
-                        <p class="text-xs text-gray-650 leading-relaxed line-clamp-3">{{ $materi->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
-                    </div>
+            <div class="bg-white border border-gray-100 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                                <th class="py-4 px-6 w-20">Kode</th>
+                                <th class="py-4 px-6 w-32">Status Baca</th>
+                                <th class="py-4 px-6">Judul Materi</th>
+                                <th class="py-4 px-6 w-24">Tipe</th>
+                                <th class="py-4 px-6">Dosen</th>
+                                <th class="py-4 px-6 text-right w-48">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-gray-100">
+                            @foreach ($items as $materi)
+                            @php
+                                $isViewed = $materi->views->isNotEmpty();
+                                $ytThumbnail = null;
+                                if ($materi->tipe === 'link' && $materi->link_url) {
+                                    $url = $materi->link_url;
+                                    $parsedUrl = parse_url($url);
+                                    $videoId = null;
+                                    if (isset($parsedUrl['host']) && (str_contains($parsedUrl['host'], 'youtube.com') || str_contains($parsedUrl['host'], 'youtu.be'))) {
+                                        if (str_contains($parsedUrl['host'], 'youtu.be')) {
+                                            $videoId = ltrim($parsedUrl['path'], '/');
+                                        } elseif (isset($parsedUrl['query'])) {
+                                            parse_str($parsedUrl['query'], $queryVars);
+                                            $videoId = $queryVars['v'] ?? null;
+                                        }
+                                    }
+                                    if ($videoId) {
+                                        $ytThumbnail = "https://img.youtube.com/vi/" . $videoId . "/mqdefault.jpg";
+                                    }
+                                }
+                            @endphp
+                            <tr class="hover:bg-gray-50 transition duration-150">
+                                <td class="py-4 px-6">
+                                    <span class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-blue-50 text-primary border border-blue-100 font-mono uppercase">
+                                        {{ $materi->course->code }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span id="read-badge-{{ $materi->id }}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold border {{ $isViewed ? 'bg-emerald-50 text-emerald-800 border-emerald-100' : 'bg-amber-50 text-amber-800 border-amber-150 animate-pulse' }}">
+                                        <i class="fa-solid {{ $isViewed ? 'fa-eye' : 'fa-eye-slash' }}"></i>
+                                        <span class="badge-text">{{ $isViewed ? 'Sudah Dibaca' : 'Belum Dibaca' }}</span>
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        @if($ytThumbnail)
+                                            <a href="{{ route('mahasiswa.materi.show', $materi->id) }}" class="w-16 h-10 flex-shrink-0 border border-slate-200 overflow-hidden relative block hover:opacity-90 transition">
+                                                <img src="{{ $ytThumbnail }}" alt="Thumbnail" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center text-white text-[10px]">
+                                                    <i class="fa-solid fa-circle-play text-[14px] text-red-650 bg-white rounded-full"></i>
+                                                </div>
+                                            </a>
+                                        @elseif($materi->tipe === 'file')
+                                            <div class="w-16 h-10 flex-shrink-0 bg-red-50 border border-red-100 flex items-center justify-center text-red-500 text-base">
+                                                <i class="fa-solid fa-file-pdf"></i>
+                                            </div>
+                                        @else
+                                            <div class="w-16 h-10 flex-shrink-0 bg-slate-50 border border-slate-250 flex items-center justify-center text-slate-500 text-base">
+                                                <i class="fa-solid fa-file-lines"></i>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <a href="{{ route('mahasiswa.materi.show', $materi->id) }}" class="font-bold text-gray-900 leading-snug hover:text-primary transition block">
+                                                {{ $materi->judul }}
+                                            </a>
+                                            @if($materi->deskripsi)
+                                                <p class="text-xs text-gray-400 mt-0.5 line-clamp-1 font-normal">{{ $materi->deskripsi }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center gap-1 text-xs capitalize">
+                                        @if($materi->tipe === 'file')
+                                            <i class="fa-solid fa-file-pdf text-red-500"></i> PDF
+                                        @elseif($materi->tipe === 'link')
+                                            <i class="fa-solid fa-link text-blue-500"></i> Link
+                                        @else
+                                            <i class="fa-solid fa-align-left text-gray-500"></i> Teks
+                                        @endif
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-slate-500 text-xs md:text-sm">{{ $materi->user->name }}</td>
+                                <td class="py-4 px-6 text-right">
+                                    <div class="inline-flex items-center gap-1.5 justify-end">
+                                        <!-- Lihat Detail Button -->
+                                        <a href="{{ route('mahasiswa.materi.show', $materi->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 border border-slate-350 text-slate-700 text-[11px] font-bold transition hover:bg-slate-50 cursor-pointer rounded-sm">
+                                            <i class="fa-solid fa-circle-info"></i> Detail
+                                        </a>
 
-                    <div class="pt-4 border-t border-gray-50">
-                        @if ($materi->tipe === 'file' && $materi->file_path)
-                        <a href="{{ route('mahasiswa.materi.download', $materi->id) }}" onclick="markAsDownloaded({{ $materi->id }})" class="w-full bg-secondary hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center space-x-2">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span>Download File</span>
-                        </a>
-                        @elseif ($materi->tipe === 'link' && $materi->link_url)
-                        <a href="{{ route('mahasiswa.materi.open', $materi->id) }}" onclick="markAsDownloaded({{ $materi->id }})" target="_blank" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center space-x-2">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            <span>Buka Tautan Eksternal</span>
-                        </a>
-                        @else
-                        <button type="button" onclick="viewTextMateri({{ $materi->id }}, '{{ addslashes($materi->judul) }}', '{{ addslashes($materi->konten) }}')" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center space-x-2">
-                            <i class="fa-solid fa-book-open"></i>
-                            <span>Baca Materi Tekstual</span>
-                        </button>
-                        @endif
-                    </div>
+                                        <!-- Tipe-specific Button -->
+                                        @if ($materi->tipe === 'file' && $materi->file_path)
+                                            <a href="{{ route('mahasiswa.materi.download', $materi->id) }}" onclick="markAsDownloaded({{ $materi->id }})" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-primary hover:bg-primary-900 text-white text-[11px] font-bold transition cursor-pointer rounded-sm">
+                                                <i class="fa-solid fa-download"></i> Download
+                                            </a>
+                                        @elseif ($materi->tipe === 'link' && $materi->link_url)
+                                            <a href="{{ route('mahasiswa.materi.open', $materi->id) }}" onclick="markAsDownloaded({{ $materi->id }})" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-primary hover:bg-primary-900 text-white text-[11px] font-bold transition cursor-pointer rounded-sm">
+                                                <i class="fa-solid fa-external-link"></i> Buka Link
+                                            </a>
+                                        @else
+                                            <a href="{{ route('mahasiswa.materi.show', $materi->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-primary hover:bg-primary-900 text-white text-[11px] font-bold transition cursor-pointer rounded-sm">
+                                                <i class="fa-solid fa-book-open"></i> Baca
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-                @endforeach
             </div>
         </div>
         @empty
-        <div class="bg-white p-8 text-center text-gray-400 rounded-2xl border border-gray-150 shadow-sm">
+        <div class="bg-white p-8 text-center text-gray-400 border border-gray-150 shadow-sm">
             <i class="fa-solid fa-book-bookmark text-4xl mb-3 text-gray-300"></i>
             <p class="text-xs font-semibold">Belum ada materi pembelajaran untuk kelas Anda.</p>
         </div>
@@ -92,62 +161,23 @@
     </div>
 </div>
 
-<!-- Modal Baca Materi Tekstual -->
-<div id="materi-modal" class="fixed inset-0 z-50 bg-black/50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 border border-slate-100">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h3 id="materi-judul" class="text-sm font-bold text-gray-800 uppercase tracking-widest">Materi</h3>
-            <button onclick="closeMateriModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-        </div>
-        <div class="p-6 overflow-y-auto max-h-[60vh] space-y-4">
-            <div id="materi-konten" class="text-gray-700 text-xs whitespace-pre-line leading-relaxed"></div>
-        </div>
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
-            <button onclick="closeMateriModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-950 text-white rounded-xl text-xs font-bold transition">Tutup</button>
-        </div>
-    </div>
-</div>
-
 @section('scripts')
 <script>
-    function viewTextMateri(id, judul, konten) {
-        document.getElementById('materi-judul').textContent = judul;
-        document.getElementById('materi-konten').innerHTML = konten;
-        document.getElementById('materi-modal').classList.remove('hidden');
-        document.getElementById('materi-modal').classList.add('flex');
-        
-        axios.post(`/mahasiswa/materi/${id}/view`)
-            .then(res => {
-                if (res.data.success) {
-                    const badge = document.getElementById(`read-badge-${id}`);
-                    if (badge) {
-                        badge.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold border bg-emerald-50 text-emerald-800 border-emerald-100";
-                        const icon = badge.querySelector('i');
-                        if (icon) icon.className = "fa-solid fa-eye";
-                        const text = badge.querySelector('.badge-text');
-                        if (text) text.textContent = "Sudah Dibaca";
-                    }
-                }
-            });
-    }
-
-    function closeMateriModal() {
-        const modal = document.getElementById('materi-modal');
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
-    }
-
     function markAsDownloaded(id) {
         setTimeout(() => {
-            const badge = document.getElementById(`read-badge-${id}`);
-            if (badge) {
-                badge.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold border bg-emerald-50 text-emerald-800 border-emerald-100";
-                const icon = badge.querySelector('i');
-                if (icon) icon.className = "fa-solid fa-eye";
-                const text = badge.querySelector('.badge-text');
-                if (text) text.textContent = "Sudah Dibaca";
-            }
+            updateReadBadge(id);
         }, 500);
+    }
+
+    function updateReadBadge(id) {
+        const badge = document.getElementById(`read-badge-${id}`);
+        if (badge) {
+            badge.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold border bg-emerald-50 text-emerald-800 border-emerald-100";
+            const icon = badge.querySelector('i');
+            if (icon) icon.className = "fa-solid fa-eye";
+            const text = badge.querySelector('.badge-text');
+            if (text) text.textContent = "Sudah Dibaca";
+        }
     }
 </script>
 @endsection

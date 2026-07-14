@@ -197,12 +197,14 @@ Route::middleware(['auth'])->group(function () {
     // ==========================================
     Route::middleware(['role:mahasiswa'])->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/', [MahasiswaController::class, 'dashboard'])->name('dashboard');
+        Route::get('/ujian', [MahasiswaController::class, 'ujianIndex'])->name('ujian.index');
         Route::get('/ruang-ujian/{id}', [MahasiswaController::class, 'examRoom'])->name('exam-room');
         Route::get('/riwayat-ujian', [MahasiswaController::class, 'examHistory'])->name('history');
         Route::get('/riwayat-ujian/review/{id}', [MahasiswaController::class, 'examReview'])->name('review');
 
         // E-Learning Mahasiswa
         Route::get('/materi', [ElearningController::class, 'mahasiswaMateri'])->name('materi.index');
+        Route::get('/materi/{id}', [ElearningController::class, 'mahasiswaMateriShow'])->name('materi.show');
         Route::get('/materi/{id}/download', [ElearningController::class, 'mahasiswaMateriDownload'])->name('materi.download');
         Route::get('/materi/{id}/open', [ElearningController::class, 'mahasiswaMateriOpen'])->name('materi.open');
         Route::post('/materi/{id}/view', [ElearningController::class, 'mahasiswaMateriView'])->name('materi.view');

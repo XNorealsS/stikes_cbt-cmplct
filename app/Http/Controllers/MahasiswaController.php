@@ -122,6 +122,50 @@ class MahasiswaController extends Controller
     }
 
     /**
+     * Mahasiswa Ujian list index page
+     */
+    public function ujianIndex()
+    {
+        $userId = auth()->id();
+        $classId = auth()->user()->class_id;
+
+        // Fetch active exams that matches the student class or open to all
+        $activeExams = Exam::with(['course', 'dosen'])
+            ->where('start_time', '<=', now())
+            ->where('end_time', '>=', now())
+            ->where(function($query) use ($classId) {
+                $query->whereNull('class_id')
+                      ->orWhere('class_id', $classId);
+            })
+            ->whereDoesntHave('studentExams', function($query) use ($userId) {
+                $query->where('user_id', $userId)->where('status', 'finished');
+            })
+            ->get();
+
+        // Check if there is an in-progress session they can resume
+        $activeSession = StudentExam::with('exam.course')
+            ->where('user_id', $userId)
+            ->where('status', 'progress')
+            ->first();
+
+        // Auto-finish active session if elapsed time exceeds duration
+        if ($activeSession) {
+            $exam = $activeSession->exam;
+            $startedAt = $activeSession->started_at;
+            $elapsedSeconds = abs(now()->diffInSeconds($startedAt));
+            $totalSeconds = $exam->duration_minutes * 60;
+            $remainingSeconds = $totalSeconds - $elapsedSeconds;
+
+            if ($remainingSeconds <= 0 || now()->greaterThan($exam->end_time)) {
+                $this->forceSubmitSession($activeSession);
+                $activeSession = null;
+            }
+        }
+
+        return view('mahasiswa.ujian', compact('activeExams', 'activeSession'));
+    }
+
+    /**
      * Exam Room view
      */
     public function examRoom($id)
@@ -189,19 +233,7 @@ class MahasiswaController extends Controller
      */
     public function examReview($id)
     {
-        $userId = auth()->id();
-        $studentExam = StudentExam::with(['exam.course', 'exam.dosen'])
-            ->where('user_id', $userId)
-            ->where('status', 'finished')
-            ->findOrFail($id);
-
-        // Fetch answers with associated questions to avoid N+1 query
-        $answers = StudentAnswer::with('question')
-            ->where('student_exam_id', $studentExam->id)
-            ->orderBy('question_order', 'asc')
-            ->get();
-
-        return view('mahasiswa.exam-review', compact('studentExam', 'answers'));
+        return redirect()->route('mahasiswa.history')->with('error', 'Pembahasan dan detail lembar jawaban ujian tidak dipublikasikan untuk mahasiswa.');
     }
 
     private function forceSubmitSession(StudentExam $studentExam)

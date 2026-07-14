@@ -3,93 +3,99 @@
 @section('title', 'Jadwal Ujian - CBT STIKES Muhammadiyah Lhokseumawe')
 
 @section('dosen-content')
-<div class="space-y-8">
-    <!-- Page Header (SIAKAD style) -->
-    <div class="mb-4">
-        <p class="text-xs text-slate-400 mb-1">STIKESMU &gt; Dosen &gt; Jadwal Ujian</p>
-        <div class="flex flex-wrap items-start justify-between gap-3 pb-3 border-b-2 border-green-700">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                    <span class="w-1.5 h-6 bg-green-700 rounded-full inline-block"></span>
-                    Jadwal &amp; Sesi Ujian
-                </h1>
-                <p class="text-xs text-slate-500 mt-0.5">Buat, kelola sesi ujian aktif, dan bagikan token ujian kepada mahasiswa.</p>
-            </div>
-            <button type="button" onclick="openAddModal()" class="rounded border border-transparent bg-green-700 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white hover:bg-green-800 transition flex items-center gap-1.5 cursor-pointer shadow-none">
-                <i class="fa-solid fa-calendar-plus text-xs"></i>
-                <span>Buat Sesi Ujian</span>
-            </button>
+<div class="space-y-5">
+    <!-- Page Header -->
+    <!-- Topbar & Actions -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-slate-800" style="font-family: var(--font-heading);">Jadwal Ujian</h2>
+            <p class="text-sm text-slate-500 mt-1">Kelola jadwal ujian yang Anda ampu.</p>
         </div>
+        <button type="button" onclick="openAddModal()" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-900 text-white px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-sm" style="border-radius: var(--radius-md);">
+            <i class="fa-solid fa-plus"></i> Tambah Ujian
+        </button>
     </div>
 
-    <!-- Exams Table -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <!-- Exams Card & Table -->
+    <div class="card overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left">
                 <thead>
-                    <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                        <th class="py-4 px-6">Informasi Ujian</th>
-                        <th class="py-4 px-6">Detail Sesi & Ruang</th>
-                        <th class="py-4 px-6 text-center">Token</th>
-                        <th class="py-4 px-6">Durasi & Soal</th>
-                        <th class="py-4 px-6">Waktu Aktif</th>
-                        <th class="py-4 px-6 text-right">Aksi</th>
+                    <tr>
+                        <th>Informasi Ujian</th>
+                        <th>Detail Sesi &amp; Ruang</th>
+                        <th class="text-center">Token</th>
+                        <th>Durasi &amp; Soal</th>
+                        <th>Waktu Aktif</th>
+                        <th class="text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="text-sm divide-y divide-gray-100">
+                <tbody>
                     @forelse ($exams as $exam)
-                    <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="py-4 px-6">
-                            <span class="font-bold text-gray-900 block text-base">{{ $exam->title }}</span>
-                            <div class="flex flex-wrap gap-1.5 mt-1">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $exam->examTypeBadgeClass() }}">{{ $exam->exam_type }}</span>
-                                <span class="bg-blue-50 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-100">
+                    <tr>
+                        <td>
+                            <span class="font-bold text-slate-900 block text-[13px]">{{ $exam->title }}</span>
+                            <div class="flex flex-wrap gap-1.5 mt-1.5">
+                                <span class="badge {{ $exam->examTypeBadgeClass() }} text-[9px] uppercase py-0.5 px-1.5">{{ $exam->exam_type }}</span>
+                                <span class="badge badge-primary text-[9px] py-0.5 px-1.5">
                                     PG: {{ $exam->passing_grade }}%
                                 </span>
                                 @if ($exam->classRoom)
-                                    <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200">
+                                    <span class="badge badge-neutral text-[9px] py-0.5 px-1.5">
                                         Kelas: {{ $exam->classRoom->name }}
                                     </span>
                                 @endif
                             </div>
                         </td>
-                        <td class="py-4 px-6">
-                            <span class="font-semibold text-gray-700 block">{{ $exam->course->name }}</span>
-                            <div class="text-xs text-gray-400 mt-0.5 space-y-0.5">
-                                <div><span class="font-bold text-gray-500">Ruang:</span> {{ $exam->ruang ? $exam->ruang->nama : '-' }}</div>
-                                <div><span class="font-bold text-gray-500">Sesi:</span> {{ $exam->sesi ? $exam->sesi->nama : '-' }}</div>
+                        <td>
+                            <span class="font-semibold text-slate-700 block text-xs">{{ $exam->course->name }}</span>
+                            <div class="text-[10px] text-slate-400 mt-1 space-y-0.5">
+                                <div><span class="font-semibold text-slate-500">Ruang:</span> {{ $exam->ruang ? $exam->ruang->nama : '—' }}</div>
+                                <div><span class="font-semibold text-slate-500">Sesi:</span> {{ $exam->sesi ? $exam->sesi->nama : '—' }}</div>
                             </div>
                         </td>
-                        <td class="py-4 px-6 text-center">
-                            <div class="inline-flex items-center space-x-2">
-                                <span id="token-text-{{ $exam->id }}" class="font-mono font-black bg-gray-100 border text-gray-800 px-3 py-1.5 rounded-lg text-sm tracking-widest">{{ $exam->token }}</span>
-                                <button type="button" onclick="regenerateToken({{ $exam->id }}, '{{ $exam->title }}')" title="Regenerasi Token Baru" class="text-primary hover:text-blue-800 transition">
-                                    <i class="fa-solid fa-arrows-rotate text-sm"></i>
+                        <td class="text-center">
+                            <div class="inline-flex items-center gap-1.5">
+                                <span id="token-text-{{ $exam->id }}" class="font-mono font-bold bg-slate-50 border border-slate-200 text-slate-800 px-2.5 py-1 text-xs tracking-widest" style="border-radius: var(--radius-sm);">{{ $exam->token }}</span>
+                                <button type="button" onclick="regenerateToken({{ $exam->id }}, '{{ $exam->title }}')" title="Regenerasi Token Baru" class="w-7 h-7 flex items-center justify-center bg-slate-50 hover:bg-slate-100 border border-slate-200 text-primary-700 hover:text-primary-800 transition active:scale-90" style="border-radius: var(--radius-sm);">
+                                    <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
                                 </button>
                             </div>
                         </td>
-                        <td class="py-4 px-6">
-                            <span class="block text-gray-600"><i class="fa-regular fa-clock mr-1.5 text-gray-400"></i>{{ $exam->duration_minutes }} Menit</span>
-                            <span class="block text-xs text-gray-400 mt-0.5"><i class="fa-solid fa-list-check mr-1.5 text-gray-400"></i>{{ $exam->total_questions }} Soal ({{ $exam->is_random ? 'Acak' : 'Urut' }})</span>
+                        <td>
+                            <span class="block text-slate-600 text-xs"><i class="fa-regular fa-clock mr-1 text-slate-400"></i>{{ $exam->duration_minutes }} Menit</span>
+                            <span class="block text-[10px] text-slate-400 mt-1"><i class="fa-solid fa-list-check mr-1 text-slate-400"></i>{{ $exam->total_questions }} Soal ({{ $exam->is_random ? 'Acak' : 'Urut' }})</span>
                         </td>
-                        <td class="py-4 px-6 text-xs text-gray-500">
-                            <span class="block"><span class="font-bold text-gray-700">Mulai:</span> {{ $exam->start_time->format('d/m/Y H:i') }} WIB</span>
-                            <span class="block mt-0.5"><span class="font-bold text-gray-700">Selesai:</span> {{ $exam->end_time->format('d/m/Y H:i') }} WIB</span>
+                        <td class="text-[11px] text-slate-500 space-y-0.5">
+                            <span class="block"><span class="font-semibold text-slate-600">Mulai:</span> {{ $exam->start_time->format('d/m/Y H:i') }}</span>
+                            <span class="block"><span class="font-semibold text-slate-600">Selesai:</span> {{ $exam->end_time->format('d/m/Y H:i') }}</span>
                         </td>
-                        <td class="py-4 px-6 text-right space-x-2">
-                            <button type="button" onclick="openEditModal({{ json_encode($exam) }})" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                                <span>Edit</span>
-                            </button>
-                            <button type="button" onclick="confirmDelete({{ $exam->id }}, '{{ $exam->title }}')" class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-trash-can"></i>
-                                <span>Hapus</span>
-                            </button>
+                        <td class="text-right">
+                            <div class="inline-flex items-center gap-1">
+                                <button type="button" onclick="openEditModal({{ json_encode($exam) }})" class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold transition duration-150" style="border-radius: var(--radius-sm);">
+                                    <i class="fa-solid fa-pen-to-square text-[9px]"></i>
+                                    <span>Edit</span>
+                                </button>
+                                <button type="button" onclick="confirmDelete({{ $exam->id }}, '{{ $exam->title }}')" class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 text-[11px] font-bold transition duration-150" style="border-radius: var(--radius-sm);">
+                                    <i class="fa-solid fa-trash-can text-[9px]"></i>
+                                    <span>Hapus</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-gray-400">Anda belum menjadwalkan ujian apapun.</td>
+                        <td colspan="6" class="py-14 text-center">
+                            <div class="flex flex-col items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
+                                    <i class="fa-regular fa-calendar-xmark text-xl text-slate-300"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-400">Belum ada sesi ujian</p>
+                                    <p class="text-xs text-slate-300 mt-0.5">Jadwal ujian yang Anda buat akan tampil di sini.</p>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -99,17 +105,23 @@
 </div>
 
 <!-- Modal Tambah Jadwal Ujian -->
-<div id="add-modal" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 my-8">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h3 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-calendar-check text-primary mr-2"></i>Buat Sesi Ujian Baru</h3>
-            <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+<div id="add-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <form id="add-form" class="bg-white max-w-lg w-full shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[85vh]" style="border-radius: var(--radius-xl);">
+        @csrf
+        {{-- Fixed Header --}}
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 flex-shrink-0">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-check text-primary-700"></i>
+                Buat Sesi Ujian Baru
+            </h3>
+            <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-slate-650 w-7 h-7 flex items-center justify-center hover:bg-slate-100 transition" style="border-radius: var(--radius-sm);"><i class="fa-solid fa-xmark text-sm"></i></button>
         </div>
-        <form id="add-form" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-            @csrf
+
+        {{-- Scrollable Body --}}
+        <div class="p-6 space-y-4 overflow-y-auto flex-grow">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Bank Soal</label>
-                <select name="bank_soal_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition bg-white">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Pilih Bank Soal</label>
+                <select name="bank_soal_id" required class="w-full">
                     <option value="" disabled selected>-- Pilih Bank Soal --</option>
                     @foreach ($bankSoals as $bs)
                         <option value="{{ $bs->id }}">{{ $bs->nama }} (MK: {{ $bs->course->name }})</option>
@@ -119,16 +131,16 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tahun Akademik</label>
-                    <select name="tahun_akademik_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Tahun Akademik</label>
+                    <select name="tahun_akademik_id" required class="w-full">
                         @foreach ($tahunAkademiks as $ta)
                             <option value="{{ $ta->id }}" {{ $ta->is_aktif ? 'selected' : '' }}>{{ $ta->nama }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Jenis Ujian</label>
-                    <select name="jenis_ujian_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Jenis Ujian</label>
+                    <select name="jenis_ujian_id" required class="w-full">
                         @foreach ($jenisUjians as $ju)
                             <option value="{{ $ju->id }}">{{ $ju->nama }} ({{ $ju->kode }})</option>
                         @endforeach
@@ -138,16 +150,16 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ruang Ujian</label>
-                    <select name="ruang_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Ruang Ujian</label>
+                    <select name="ruang_id" required class="w-full">
                         @foreach ($ruangs as $ru)
                             <option value="{{ $ru->id }}">{{ $ru->nama }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Sesi Waktu</label>
-                    <select name="sesi_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Sesi Waktu</label>
+                    <select name="sesi_id" required class="w-full">
                         @foreach ($sesis as $se)
                             <option value="{{ $se->id }}">{{ $se->nama }} ({{ substr($se->jam_mulai,0,5) }} - {{ substr($se->jam_selesai,0,5) }})</option>
                         @endforeach
@@ -157,8 +169,8 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tipe Ujian</label>
-                    <select name="exam_type" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Tipe Ujian</label>
+                    <select name="exam_type" required class="w-full">
                         <option value="UTS">UTS</option>
                         <option value="UAS">UAS</option>
                         <option value="KUIS">Kuis</option>
@@ -167,19 +179,19 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Passing Grade (KKM)</label>
-                    <input type="number" step="0.01" name="passing_grade" value="60" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Passing Grade (KKM)</label>
+                    <input type="number" step="0.01" name="passing_grade" value="60" required class="w-full">
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Nama / Judul Ujian</label>
-                <input type="text" name="title" required placeholder="Contoh: UTS KDP Ganjil" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Nama / Judul Ujian</label>
+                <input type="text" name="title" required placeholder="Contoh: UTS KDP Ganjil" class="w-full">
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Kelas Sasaran (Opsional)</label>
-                <select name="class_id" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition bg-white">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Kelas Sasaran (Opsional)</label>
+                <select name="class_id" class="w-full">
                     <option value="">-- Semua Kelas (Bisa Diakses Semua Kelas) --</option>
                     @foreach ($classes as $class)
                         <option value="{{ $class->id }}">{{ $class->name }}</option>
@@ -189,59 +201,66 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Waktu Mulai</label>
-                    <input type="datetime-local" name="start_time" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Waktu Mulai</label>
+                    <input type="datetime-local" name="start_time" required class="w-full">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Waktu Selesai</label>
-                    <input type="datetime-local" name="end_time" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Waktu Selesai</label>
+                    <input type="datetime-local" name="end_time" required class="w-full">
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Durasi Pengerjaan (Menit)</label>
-                    <input type="number" name="duration_minutes" required min="5" placeholder="Contoh: 90" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Durasi (Menit)</label>
+                    <input type="number" name="duration_minutes" required min="5" placeholder="Contoh: 90" class="w-full">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Soal Diujikan</label>
-                    <input type="number" name="total_questions" required min="1" placeholder="Contoh: 50" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Jumlah Soal</label>
+                    <input type="number" name="total_questions" required min="1" placeholder="Contoh: 50" class="w-full">
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Petunjuk Pengerjaan Ujian (Opsional)</label>
-                <textarea name="petunjuk" rows="3" placeholder="Contoh: Berdoalah sebelum mengerjakan. Pilih satu jawaban paling tepat." class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition"></textarea>
+                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Petunjuk Pengerjaan (Opsional)</label>
+                <textarea name="petunjuk" rows="2" placeholder="Contoh: Berdoalah sebelum mengerjakan. Pilih satu jawaban paling tepat." class="w-full"></textarea>
             </div>
 
-            <div class="flex items-center mt-2">
+            <div class="flex items-center gap-2 pt-1">
                 <input id="add-is_random" name="is_random" type="checkbox" value="1" checked class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                <label for="add-is_random" class="ml-2 block text-sm font-semibold text-gray-700">Acak Urutan Soal (Sangat Direkomendasikan)</label>
+                <label for="add-is_random" class="text-xs font-semibold text-slate-600 cursor-pointer">Acak Urutan Soal (Sangat Direkomendasikan)</label>
             </div>
+        </div>
 
-            <div class="pt-4 flex justify-end space-x-3 border-t border-gray-100">
-                <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-primary hover:bg-blue-800 text-white rounded-lg text-sm font-semibold transition shadow-sm">Simpan</button>
-            </div>
-        </form>
-    </div>
+        {{-- Fixed Footer --}}
+        <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-2 bg-slate-50 flex-shrink-0">
+            <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs font-semibold hover:bg-slate-100 transition cursor-pointer" style="border-radius: var(--radius-md);">Batal</button>
+            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-900 text-white text-xs font-bold transition cursor-pointer" style="border-radius: var(--radius-md);">Simpan</button>
+        </div>
+    </form>
 </div>
 
 <!-- Modal Edit Jadwal Ujian -->
-<div id="edit-modal" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 my-8">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h3 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-calendar-day text-primary mr-2"></i>Edit Sesi Ujian</h3>
-            <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+<div id="edit-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <form id="edit-form" class="bg-white max-w-lg w-full shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[85vh]" style="border-radius: var(--radius-xl);">
+        @csrf
+        @method('PUT')
+        <input type="hidden" id="edit-id">
+
+        {{-- Fixed Header --}}
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 flex-shrink-0">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-day text-primary-700"></i>
+                Edit Sesi Ujian
+            </h3>
+            <button type="button" onclick="closeEditModal()" class="text-slate-400 hover:text-slate-655 w-7 h-7 flex items-center justify-center hover:bg-slate-100 transition" style="border-radius: var(--radius-sm);"><i class="fa-solid fa-xmark text-sm"></i></button>
         </div>
-        <form id="edit-form" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-            @csrf
-            @method('PUT')
-            <input type="hidden" id="edit-id">
-            
+
+        {{-- Scrollable Body --}}
+        <div class="p-6 space-y-4 overflow-y-auto flex-grow">
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Bank Soal</label>
-                <select id="edit-bank_soal_id" name="bank_soal_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition bg-white">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Pilih Bank Soal</label>
+                <select id="edit-bank_soal_id" name="bank_soal_id" required class="w-full bg-white">
                     <option value="" disabled>-- Pilih Bank Soal --</option>
                     @foreach ($bankSoals as $bs)
                         <option value="{{ $bs->id }}">{{ $bs->nama }} (MK: {{ $bs->course->name }})</option>
@@ -251,16 +270,16 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tahun Akademik</label>
-                    <select id="edit-tahun_akademik_id" name="tahun_akademik_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Tahun Akademik</label>
+                    <select id="edit-tahun_akademik_id" name="tahun_akademik_id" required class="w-full bg-white">
                         @foreach ($tahunAkademiks as $ta)
                             <option value="{{ $ta->id }}">{{ $ta->nama }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Jenis Ujian</label>
-                    <select id="edit-jenis_ujian_id" name="jenis_ujian_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Jenis Ujian</label>
+                    <select id="edit-jenis_ujian_id" name="jenis_ujian_id" required class="w-full bg-white">
                         @foreach ($jenisUjians as $ju)
                             <option value="{{ $ju->id }}">{{ $ju->nama }} ({{ $ju->kode }})</option>
                         @endforeach
@@ -270,16 +289,16 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ruang Ujian</label>
-                    <select id="edit-ruang_id" name="ruang_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Ruang Ujian</label>
+                    <select id="edit-ruang_id" name="ruang_id" required class="w-full bg-white">
                         @foreach ($ruangs as $ru)
                             <option value="{{ $ru->id }}">{{ $ru->nama }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Sesi Waktu</label>
-                    <select id="edit-sesi_id" name="sesi_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Sesi Waktu</label>
+                    <select id="edit-sesi_id" name="sesi_id" required class="w-full bg-white">
                         @foreach ($sesis as $se)
                             <option value="{{ $se->id }}">{{ $se->nama }} ({{ substr($se->jam_mulai,0,5) }} - {{ substr($se->jam_selesai,0,5) }})</option>
                         @endforeach
@@ -289,8 +308,8 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tipe Ujian</label>
-                    <select id="edit-exam_type" name="exam_type" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Tipe Ujian</label>
+                    <select id="edit-exam_type" name="exam_type" required class="w-full bg-white">
                         <option value="UTS">UTS</option>
                         <option value="UAS">UAS</option>
                         <option value="KUIS">Kuis</option>
@@ -299,19 +318,19 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Passing Grade (KKM)</label>
-                    <input type="number" step="0.01" id="edit-passing_grade" name="passing_grade" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Passing Grade (KKM)</label>
+                    <input type="number" step="0.01" id="edit-passing_grade" name="passing_grade" required class="w-full">
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Nama / Judul Ujian</label>
-                <input type="text" id="edit-title" name="title" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Nama / Judul Ujian</label>
+                <input type="text" id="edit-title" name="title" required class="w-full">
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Kelas Sasaran (Opsional)</label>
-                <select id="edit-class_id" name="class_id" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition bg-white">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Kelas Sasaran (Opsional)</label>
+                <select id="edit-class_id" name="class_id" class="w-full bg-white">
                     <option value="">-- Semua Kelas (Bisa Diakses Semua Kelas) --</option>
                     @foreach ($classes as $class)
                         <option value="{{ $class->id }}">{{ $class->name }}</option>
@@ -321,42 +340,43 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Waktu Mulai</label>
-                    <input type="datetime-local" id="edit-start_time" name="start_time" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Waktu Mulai</label>
+                    <input type="datetime-local" id="edit-start_time" name="start_time" required class="w-full">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Waktu Selesai</label>
-                    <input type="datetime-local" id="edit-end_time" name="end_time" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Waktu Selesai</label>
+                    <input type="datetime-local" id="edit-end_time" name="end_time" required class="w-full">
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Durasi Pengerjaan (Menit)</label>
-                    <input type="number" id="edit-duration_minutes" name="duration_minutes" required min="5" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Durasi (Menit)</label>
+                    <input type="number" id="edit-duration_minutes" name="duration_minutes" required min="5" class="w-full">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Soal Diujikan</label>
-                    <input type="number" id="edit-total_questions" name="total_questions" required min="1" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Jumlah Soal</label>
+                    <input type="number" id="edit-total_questions" name="total_questions" required min="1" class="w-full">
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Petunjuk Pengerjaan Ujian (Opsional)</label>
-                <textarea id="edit-petunjuk" name="petunjuk" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition"></textarea>
+                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Petunjuk Pengerjaan (Opsional)</label>
+                <textarea id="edit-petunjuk" name="petunjuk" rows="2" class="w-full"></textarea>
             </div>
 
-            <div class="flex items-center mt-2">
+            <div class="flex items-center gap-2 pt-1">
                 <input id="edit-is_random" name="is_random" type="checkbox" value="1" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                <label for="edit-is_random" class="ml-2 block text-sm font-semibold text-gray-700">Acak Urutan Soal</label>
+                <label for="edit-is_random" class="text-xs font-semibold text-slate-600 cursor-pointer">Acak Urutan Soal</label>
             </div>
+        </div>
 
-            <div class="pt-4 flex justify-end space-x-3 border-t border-gray-100">
-                <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-primary hover:bg-blue-800 text-white rounded-lg text-sm font-semibold transition shadow-sm">Simpan</button>
-            </div>
-        </form>
-    </div>
+        {{-- Fixed Footer Edit --}}
+        <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-2 bg-slate-50 flex-shrink-0">
+            <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs font-semibold hover:bg-slate-100 transition cursor-pointer" style="border-radius: var(--radius-md);">Batal</button>
+            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-900 text-white text-xs font-bold transition cursor-pointer" style="border-radius: var(--radius-md);">Simpan</button>
+        </div>
+    </form>
 </div>
 @endsection
 

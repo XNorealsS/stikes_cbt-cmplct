@@ -24,7 +24,7 @@
     </div>
 
     <!-- History Card / Table -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="bg-white border border-gray-100 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -35,7 +35,6 @@
                         <th class="py-4 px-6">Selesai Pengerjaan</th>
                         <th class="py-4 px-6 text-center">Status</th>
                         <th class="py-4 px-6 text-center">Nilai Akhir</th>
-                        <th class="py-4 px-6 text-right">Pembahasan</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
@@ -49,7 +48,7 @@
                         <td class="py-4 px-6 text-xs text-gray-500">{{ $h->started_at->format('d-m-Y H:i') }}</td>
                         <td class="py-4 px-6 text-xs text-gray-500">{{ $h->finished_at ? $h->finished_at->format('d-m-Y H:i') : '-' }}</td>
                         <td class="py-4 px-6 text-center">
-                            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-green-50 text-green-700 uppercase">
+                            <span class="px-2.5 py-0.5 text-xs font-bold rounded bg-green-50 text-green-700 border border-green-150 uppercase">
                                 {{ $h->status }}
                             </span>
                         </td>
@@ -58,16 +57,10 @@
                                 {{ number_format($h->score, 2) }}
                             </span>
                         </td>
-                        <td class="py-4 px-6 text-right">
-                            <a href="{{ route('mahasiswa.review', ['id' => $h->id]) }}" class="bg-blue-50 hover:bg-blue-100 text-primary px-3 py-2 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1.5 shadow-sm">
-                                <i class="fa-solid fa-book-open"></i>
-                                <span>Lihat Pembahasan</span>
-                            </a>
-                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-12 text-center text-gray-400">
+                        <td colspan="6" class="py-12 text-center text-gray-400">
                             <i class="fa-solid fa-clock-rotate-left text-4xl mb-3 text-gray-300 block"></i>
                             Anda belum menyelesaikan ujian apapun.
                         </td>

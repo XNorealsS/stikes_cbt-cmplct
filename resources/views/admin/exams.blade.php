@@ -103,71 +103,73 @@
             <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-calendar-check text-emerald-700 mr-2"></i>Buat Sesi Ujian Baru</h3>
             <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
         </div>
-        <form id="add-form" class="p-5 space-y-4">
+        <form id="add-form" class="flex flex-col max-h-[85vh]">
             @csrf
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Pilih Bank Soal</label>
-                <select name="bank_soal_id" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
-                    <option value="" disabled selected>-- Pilih Bank Soal --</option>
-                    @foreach ($bankSoals as $bs)
-                        <option value="{{ $bs->id }}">{{ $bs->nama }} (MK: {{ $bs->course->name }} &bull; Dosen: {{ $bs->dosen->name ?? '-' }})</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Dosen Pengampu</label>
-                <select name="dosen_id" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
-                    <option value="" disabled selected>-- Pilih Dosen Pengampu --</option>
-                    @foreach ($dosens as $d)
-                        <option value="{{ $d->id }}">{{ $d->name }} ({{ $d->username }})</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Kelas Sasaran (Opsional)</label>
-                <select name="class_id" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
-                    <option value="">-- Semua Kelas (Bisa Diakses Semua Kelas) --</option>
-                    @foreach ($classes as $class)
-                        <option value="{{ $class->id }}">{{ $class->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nama / Judul Ujian</label>
-                <input type="text" name="title" required placeholder="Contoh: Ujian Tengah Semester (UTS)" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
+            <div class="p-6 space-y-4 overflow-y-auto">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waktu Mulai</label>
-                    <input type="datetime-local" name="start_time" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Bank Soal</label>
+                    <select name="bank_soal_id" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
+                        <option value="" disabled selected>-- Pilih Bank Soal --</option>
+                        @foreach ($bankSoals as $bs)
+                            <option value="{{ $bs->id }}">{{ $bs->nama }} (MK: {{ $bs->course->name }} &bull; Dosen: {{ $bs->dosen->name ?? '-' }})</option>
+                        @endforeach
+                    </select>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waktu Selesai</label>
-                    <input type="datetime-local" name="end_time" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Dosen Pengampu</label>
+                    <select name="dosen_id" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
+                        <option value="" disabled selected>-- Pilih Dosen Pengampu --</option>
+                        @foreach ($dosens as $d)
+                            <option value="{{ $d->id }}">{{ $d->name }} ({{ $d->username }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Kelas Sasaran (Opsional)</label>
+                    <select name="class_id" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
+                        <option value="">-- Semua Kelas (Bisa Diakses Semua Kelas) --</option>
+                        @foreach ($classes as $class)
+                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nama / Judul Ujian</label>
+                    <input type="text" name="title" required placeholder="Contoh: Ujian Tengah Semester (UTS)" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waktu Mulai</label>
+                        <input type="datetime-local" name="start_time" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waktu Selesai</label>
+                        <input type="datetime-local" name="end_time" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Durasi Pengerjaan (Menit)</label>
+                        <input type="number" name="duration_minutes" required min="5" placeholder="Contoh: 90" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Jumlah Soal Diujikan</label>
+                        <input type="number" name="total_questions" required min="1" placeholder="Contoh: 50" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="flex items-center pt-1">
+                    <input id="add-is_random" name="is_random" type="checkbox" value="1" checked class="h-4 w-4 text-green-600 focus:ring-green-500 border-slate-300 rounded">
+                    <label for="add-is_random" class="ml-2 block text-xs font-semibold text-slate-700 uppercase">Acak Urutan Soal</label>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Durasi Pengerjaan (Menit)</label>
-                    <input type="number" name="duration_minutes" required min="5" placeholder="Contoh: 90" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Jumlah Soal Diujikan</label>
-                    <input type="number" name="total_questions" required min="1" placeholder="Contoh: 50" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
-                </div>
-            </div>
-
-            <div class="flex items-center pt-1">
-                <input id="add-is_random" name="is_random" type="checkbox" value="1" checked class="h-4 w-4 text-green-600 focus:ring-green-500 border-slate-300 rounded">
-                <label for="add-is_random" class="ml-2 block text-xs font-semibold text-slate-700 uppercase">Acak Urutan Soal</label>
-            </div>
-
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-200">
+            <div class="px-6 py-4 flex justify-end gap-2 border-t border-slate-200 bg-slate-50 flex-shrink-0">
                 <button type="button" onclick="closeAddModal()" class="rounded border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">Batal</button>
                 <button type="submit" class="rounded border border-transparent bg-green-700 px-4 py-1.5 text-xs font-semibold text-white hover:bg-green-800 transition cursor-pointer">Simpan Sesi</button>
             </div>
@@ -182,73 +184,75 @@
             <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-calendar-day text-emerald-700 mr-2"></i>Edit Sesi Ujian</h3>
             <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
         </div>
-        <form id="edit-form" class="p-5 space-y-4">
+        <form id="edit-form" class="flex flex-col max-h-[85vh]">
             @csrf
             @method('PUT')
-            <input type="hidden" id="edit-id">
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <input type="hidden" id="edit-id">
             
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Pilih Bank Soal</label>
-                <select id="edit-bank_soal_id" name="bank_soal_id" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
-                    <option value="" disabled>-- Pilih Bank Soal --</option>
-                    @foreach ($bankSoals as $bs)
-                        <option value="{{ $bs->id }}">{{ $bs->nama }} (MK: {{ $bs->course->name }} &bull; Dosen: {{ $bs->dosen->name ?? '-' }})</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Dosen Pengampu</label>
-                <select id="edit-dosen_id" name="dosen_id" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
-                    @foreach ($dosens as $d)
-                        <option value="{{ $d->id }}">{{ $d->name }} ({{ $d->username }})</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Kelas Sasaran (Opsional)</label>
-                <select id="edit-class_id" name="class_id" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
-                    <option value="">-- Semua Kelas (Bisa Diakses Semua Kelas) --</option>
-                    @foreach ($classes as $class)
-                        <option value="{{ $class->id }}">{{ $class->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nama / Judul Ujian</label>
-                <input type="text" id="edit-title" name="title" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waktu Mulai</label>
-                    <input type="datetime-local" id="edit-start_time" name="start_time" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Pilih Bank Soal</label>
+                    <select id="edit-bank_soal_id" name="bank_soal_id" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
+                        <option value="" disabled>-- Pilih Bank Soal --</option>
+                        @foreach ($bankSoals as $bs)
+                            <option value="{{ $bs->id }}">{{ $bs->nama }} (MK: {{ $bs->course->name }} &bull; Dosen: {{ $bs->dosen->name ?? '-' }})</option>
+                        @endforeach
+                    </select>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waktu Selesai</label>
-                    <input type="datetime-local" id="edit-end_time" name="end_time" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Dosen Pengampu</label>
+                    <select id="edit-dosen_id" name="dosen_id" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
+                        @foreach ($dosens as $d)
+                            <option value="{{ $d->id }}">{{ $d->name }} ({{ $d->username }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Kelas Sasaran (Opsional)</label>
+                    <select id="edit-class_id" name="class_id" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none bg-white">
+                        <option value="">-- Semua Kelas (Bisa Diakses Semua Kelas) --</option>
+                        @foreach ($classes as $class)
+                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nama / Judul Ujian</label>
+                    <input type="text" id="edit-title" name="title" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waktu Mulai</label>
+                        <input type="datetime-local" id="edit-start_time" name="start_time" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waktu Selesai</label>
+                        <input type="datetime-local" id="edit-end_time" name="end_time" required class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Durasi Pengerjaan (Menit)</label>
+                        <input type="number" id="edit-duration_minutes" name="duration_minutes" required min="5" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Jumlah Soal Diujikan</label>
+                        <input type="number" id="edit-total_questions" name="total_questions" required min="1" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="flex items-center pt-1">
+                    <input id="edit-is_random" name="is_random" type="checkbox" value="1" class="h-4 w-4 text-green-600 focus:ring-green-500 border-slate-300 rounded">
+                    <label for="edit-is_random" class="ml-2 block text-xs font-semibold text-slate-700 uppercase">Acak Urutan Soal</label>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Durasi Pengerjaan (Menit)</label>
-                    <input type="number" id="edit-duration_minutes" name="duration_minutes" required min="5" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Jumlah Soal Diujikan</label>
-                    <input type="number" id="edit-total_questions" name="total_questions" required min="1" class="w-full border border-slate-300 px-3 py-2 text-xs text-slate-800 rounded focus:border-green-600 focus:outline-none">
-                </div>
-            </div>
-
-            <div class="flex items-center pt-1">
-                <input id="edit-is_random" name="is_random" type="checkbox" value="1" class="h-4 w-4 text-green-600 focus:ring-green-500 border-slate-300 rounded">
-                <label for="edit-is_random" class="ml-2 block text-xs font-semibold text-slate-700 uppercase">Acak Urutan Soal</label>
-            </div>
-
-            <div class="pt-3 flex justify-end gap-2 border-t border-slate-200">
+            <div class="px-6 py-4 flex justify-end gap-2 border-t border-slate-200 bg-slate-50 flex-shrink-0">
                 <button type="button" onclick="closeEditModal()" class="rounded border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer">Batal</button>
                 <button type="submit" class="rounded border border-transparent bg-green-700 px-4 py-1.5 text-xs font-semibold text-white hover:bg-green-800 transition cursor-pointer">Simpan Perubahan</button>
             </div>

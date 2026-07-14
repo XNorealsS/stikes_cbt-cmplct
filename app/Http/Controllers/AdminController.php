@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Course;
-use App\Models\Question;
 use App\Models\ActivityLog;
-use App\Models\Prodi;
+use App\Models\BankSoal;
+use App\Models\Course;
 use App\Models\JenisUjian;
+use App\Models\Prodi;
+use App\Models\Question;
 use App\Models\Ruang;
 use App\Models\Sesi;
 use App\Models\TahunAkademik;
+use App\Models\User;
+use App\Services\FeederService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-
-use App\Services\FeederService;
 
 class AdminController extends Controller
 {
@@ -53,9 +53,9 @@ class AdminController extends Controller
     {
         $role = $request->query('role', 'dosen'); // Default to dosen view
         $search = $request->query('search', '');
-        
+
         $query = User::with('classRoom')->where('role', $role);
-        
+
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -64,7 +64,7 @@ class AdminController extends Controller
                   ->orWhere('nidn', 'like', "%{$search}%");
             });
         }
-        
+
         $users = $query->orderBy('name', 'asc')->get();
         $classes = \App\Models\ClassRoom::orderBy('name', 'asc')->get();
         return view('admin.users', compact('users', 'role', 'classes', 'search'));
@@ -244,7 +244,7 @@ class AdminController extends Controller
     public function usersDestroy($id)
     {
         $user = User::findOrFail($id);
-        
+
         if ($user->id === auth()->id()) {
             return response()->json(['success' => false, 'message' => 'Anda tidak bisa menghapus akun Anda sendiri.'], 403);
         }
@@ -373,6 +373,11 @@ class AdminController extends Controller
 
         $query = Question::where('course_id', $courseId)->orderBy('id', 'desc');
 
+        $bankSoals = BankSoal::with(['course'])
+            ->withCount('questions')
+            ->where('course_id', $courseId)
+            ->get();
+
         if ($difficulty)   $query->where('difficulty', $difficulty);
         if ($questionType) $query->where('question_type', $questionType);
         if ($category)     $query->where('category', $category);
@@ -388,7 +393,7 @@ class AdminController extends Controller
             ->groupBy('difficulty')
             ->pluck('total', 'difficulty');
 
-        return view('admin.bank_soal', compact('courses', 'questions', 'courseId', 'difficulty', 'questionType', 'category', 'search', 'questionCount', 'categories', 'statsByDiff'));
+        return view('admin.bank-soal.index', compact('courses', 'questions', 'courseId', 'difficulty', 'questionType', 'category', 'search', 'questionCount', 'categories', 'statsByDiff', 'bankSoals'));
     }
 
     /**
@@ -654,13 +659,13 @@ class AdminController extends Controller
     public function monitoringDetail($id)
     {
         $exam = \App\Models\Exam::with(['course', 'dosen'])->findOrFail($id);
-        
+
         // Fetch students (filter by class if exam has class_id)
         $query = User::where('role', 'mahasiswa');
         if ($exam->class_id) {
             $query->where('class_id', $exam->class_id);
         }
-        
+
         $students = $query->with('classRoom')
             ->orderBy('name', 'asc')
             ->get()
@@ -735,7 +740,7 @@ class AdminController extends Controller
     public function monitoringAdjustTime(Request $request, $id)
     {
         $exam = \App\Models\Exam::findOrFail($id);
-        
+
         $data = $request->validate([
             'duration_minutes' => 'required|integer|min:1',
             'end_time' => 'required|date|after:start_time',
@@ -854,7 +859,7 @@ class AdminController extends Controller
         }
 
         $data['is_random'] = $request->has('is_random') ? (bool)$request->input('is_random') : false;
-        
+
         $exam->update($data);
 
         ActivityLog::log('Edit Sesi Ujian (Admin)', "Admin mengubah sesi ujian '{$exam->title}'.");

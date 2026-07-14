@@ -48,7 +48,7 @@
                         </div>
                     </div>
                     <p class="text-green-700 font-medium">{{ $t->my_submission->catatan ?? '-' }}</p>
- 
+
                     @if(count($t->my_submission->files) > 0)
                         <div class="pt-1.5">
                             <span class="font-semibold text-gray-500 block mb-1">File Terlampir:</span>
@@ -62,7 +62,7 @@
                             </div>
                         </div>
                     @endif
- 
+
                     @if ($t->my_submission->nilai !== null)
                     <div class="pt-2 border-t border-green-200/50 flex items-center justify-between text-sm">
                         <span class="font-bold text-green-800">Nilai:</span>
@@ -80,7 +80,7 @@
 
             <div class="pt-4 border-t border-gray-50">
                 @if (!$t->my_submission || $t->my_submission->nilai === null)
-                <button type="button" onclick="openSubmitModal({{ json_encode($t) }})" class="w-full bg-secondary hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center space-x-2">
+                <button type="button" onclick="openSubmitModal({{ json_encode($t) }})" class="w-full bg-secondary bg-green-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-file-arrow-up"></i>
                     <span>{{ $t->my_submission ? 'Revisi Jawaban' : 'Kirim Jawaban' }}</span>
                 </button>

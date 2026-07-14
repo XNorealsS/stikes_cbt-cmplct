@@ -5,88 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'E-Learning STIKesMu')</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Tailwind CSS (via Vite) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <!-- Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     @yield('styles')
     <style>
-        /* Sidebar Styling Overrides to align with Design System variables */
+        /* ─── Sidebar ──────────────────────────────────────────────────── */
         #main-sidebar {
             background-color: var(--sidebar-bg) !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-right: 1px solid rgba(255,255,255,0.05) !important;
         }
         #main-sidebar .brand-header {
             background-color: var(--sidebar-logo-bg) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.15) !important;
         }
         #main-sidebar .profile-footer {
             background-color: var(--sidebar-bg) !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-top: 1px solid rgba(255,255,255,0.15) !important;
         }
+
+        /* Avatar circles always rounded */
+        .avatar-circle {
+            border-radius: var(--radius-full) !important;
+        }
+
+        /* Sidebar nav links & buttons */
         #main-sidebar a, #main-sidebar button {
             color: var(--sidebar-text) !important;
             font-size: 13px !important;
-            transition: all 0.15s ease-in-out;
-            opacity: 0.9;
+            padding: 9px 12px !important;
+            border-radius: var(--radius-sm) !important;
+            transition: all 0.15s ease-out;
+            opacity: 0.88;
         }
         #main-sidebar a:hover, #main-sidebar button:hover {
             background-color: var(--sidebar-hover-bg) !important;
             color: var(--sidebar-active-text) !important;
             opacity: 1;
         }
-        /* Active parent link */
-        #main-sidebar a.active-link {
+        #main-sidebar a.active-link,
+        #main-sidebar button.active {
             background-color: var(--sidebar-active-bg) !important;
             color: var(--sidebar-active-text) !important;
             font-weight: 600 !important;
             opacity: 1;
         }
-        /* Collapsible submenus structure with max-height transition */
+
+        /* Chevron rotation */
+        .chevron {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        button.active .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Collapsible submenus */
         .sidebar-submenu {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
             margin-left: 1.25rem !important;
             padding-left: 0.5rem !important;
             margin-top: 0.25rem !important;
             margin-bottom: 0.25rem !important;
-            display: block !important; /* overrides display:none from layout scripts */
+            display: block !important;
         }
-        .sidebar-submenu.show {
-            max-height: 500px;
-        }
-        /* Submenu links specific styles */
+        .sidebar-submenu.show { max-height: 500px; }
+
+        /* Submenu links */
         .sidebar-submenu a {
             color: var(--sidebar-text) !important;
-            padding: 0.4rem 0.75rem !important;
-            font-size: 12.5px !important;
+            padding: 0.45rem 0.75rem !important;
+            font-size: 12px !important;
             border-radius: var(--radius-sm) !important;
             display: block !important;
+            opacity: 0.85;
         }
         .sidebar-submenu a:hover {
             background-color: var(--sidebar-hover-bg) !important;
             color: var(--sidebar-active-text) !important;
+            opacity: 1;
         }
         .sidebar-submenu a.active-link {
             background-color: var(--sidebar-active-bg) !important;
             color: var(--sidebar-active-text) !important;
             font-weight: 600 !important;
+            opacity: 1;
+        }
+
+        /* Sidebar scrollbar */
+        #main-sidebar *::-webkit-scrollbar { width: 3px; }
+        #main-sidebar *::-webkit-scrollbar-track { background: transparent; }
+        #main-sidebar *::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-full);
+        }
+        #main-sidebar *::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        #main-sidebar nav {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
         }
     </style>
 </head>
@@ -104,7 +139,7 @@
     @if (!View::hasSection('no-nav'))
     <!-- Main Shell Container (Sidebar + Header + Content) -->
     <div class="flex min-h-screen">
-        
+
         @php
             $role = auth()->user()->role;
         @endphp
@@ -116,7 +151,7 @@
             class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col -translate-x-full transform bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] lg:translate-x-0"
         >
             {{-- Brand --}}
-            <div class="flex h-16 items-center gap-3 border-b border-[var(--sidebar-border)] bg-[var(--sidebar-logo-bg)] px-5">
+            <div class="flex h-16 items-center gap-3 px-5" style="border-bottom: 1px solid rgba(255,255,255,0.15);">
                 <img src="{{ asset('logo.png') }}" onerror="this.onerror=null;this.src='https://siakad.stikeslhokseumawe.ac.id/logo.png';" alt="Logo" width="32" height="32" loading="eager" fetchpriority="high" decoding="async" class="block h-8 w-8 object-contain">
                 <div>
                     <span class="block text-sm font-bold text-[var(--sidebar-active-text)] leading-tight">STIKesMu</span>
@@ -130,9 +165,9 @@
             </nav>
 
             {{-- User info --}}
-            <div class="border-t border-[var(--sidebar-border)] bg-[var(--sidebar-logo-bg)] px-4 py-4">
+            <div class="px-4 py-4" style="border-top: 1px solid rgba(255,255,255,0.15);">
                 <div class="flex items-center gap-3">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--sidebar-active-bg)] text-xs font-semibold text-[var(--sidebar-active-text)] border border-[var(--sidebar-border)]">
+                    <div class="avatar-circle flex h-8 w-8 items-center justify-center bg-[var(--sidebar-active-bg)] text-xs font-semibold text-[var(--sidebar-active-text)]" style="border: 1px solid rgba(255,255,255,0.1);">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
@@ -197,24 +232,41 @@
 
                 <!-- Middle: Search Bar (Admin & Dosen) -->
                 @if(auth()->user()->role === 'admin' || auth()->user()->role === 'dosen')
-                <div class="flex items-center flex-1 md:max-w-sm mx-2 md:mx-6 relative" id="header-search-wrapper">
+                <div class="flex items-center flex-1 md:max-w-xs mx-2 md:mx-4 relative" id="header-search-wrapper">
                     <!-- Mobile Search Trigger Button -->
-                    <button type="button" onclick="toggleMobileSearch()" class="md:hidden text-gray-500 hover:text-gray-800 p-1.5 rounded-full hover:bg-gray-150 flex items-center justify-center cursor-pointer">
-                        <i class="fa-solid fa-magnifying-glass text-base"></i>
+                    <button type="button" onclick="toggleMobileSearch()" class="md:hidden w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer" style="border-radius: var(--radius-md);">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
                     </button>
-                    <!-- Search Input container -->
-                    <div id="header-search-container" class="hidden md:flex items-center w-full absolute md:relative top-full left-0 right-0 mt-2 md:mt-0 bg-white md:bg-transparent p-2 md:p-0 border border-gray-200 md:border-transparent rounded-lg shadow-lg md:shadow-none z-50">
-                        <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-5 md:left-3 text-[10px]"></i>
-                        <input type="text" onkeydown="handleHeaderSearch(event)" placeholder="Ketik nama atau NIM/NIDN/soal..." class="w-full pl-10 md:pl-8 pr-4 py-1.5 bg-gray-50 border border-gray-250 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:bg-white transition" value="{{ request('search') }}">
+                    <!-- Desktop Search Input -->
+                    <div id="header-search-container" class="hidden md:flex items-center w-full relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                        <input type="text"
+                               onkeydown="handleHeaderSearch(event)"
+                               placeholder="Cari nama, NIM, NIDN, soal..."
+                               value="{{ request('search') }}"
+                               class="w-full pr-4 py-2 bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:border-primary-700 transition"
+                               style="border-radius: var(--radius-md); padding-left: 2.25rem !important;">
+                    </div>
+                    <!-- Mobile Search Dropdown -->
+                    <div id="mobile-search-container" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 p-2.5 shadow-lg z-50 md:hidden" style="border-radius: var(--radius-lg);">
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            <input type="text"
+                                   id="mobile-search-input"
+                                   onkeydown="handleHeaderSearch(event)"
+                                   placeholder="Cari nama, NIM, NIDN, soal..."
+                                   class="w-full pr-4 py-2 bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:border-primary-700 transition"
+                                   style="border-radius: var(--radius-md); padding-left: 2.25rem !important;">
+                        </div>
                     </div>
                 </div>
                 @endif
 
                 <!-- Right: Profile Dropdown & Notifications -->
                 <div class="flex items-center gap-4 ml-auto">
-                    <!-- Live Digital Clock (Secondary position) -->
-                    <div class="hidden sm:flex font-mono text-[10px] font-bold text-gray-500 bg-gray-50 border border-gray-250 px-2.5 py-1 rounded-[4px] items-center space-x-1.5">
-                        <i class="fa-regular fa-clock text-gray-400"></i>
+                    <!-- Live Digital Clock -->
+                    <div class="hidden sm:flex font-mono text-[10px] font-semibold text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-md items-center gap-1.5">
+                        <i class="fa-regular fa-clock text-slate-400 text-[9px]"></i>
                         <span id="live-digital-clock">00:00:00</span>
                     </div>
 
@@ -235,7 +287,7 @@
                                     </span>
                                 @endif
                             </button>
-                            <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-xl py-2 hidden z-50">
+                            <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-lg py-2 hidden z-50" style="border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);">
                                 <div class="px-4 py-2 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                                     <span class="font-bold text-xs text-gray-700">Notifikasi</span>
                                     @if(count($unreadNotifications) > 0)
@@ -269,18 +321,18 @@
 
                     <!-- Profile Dropdown Widget (SIAKAD style) -->
                     <div class="relative" id="profile-dropdown-wrapper">
-                        <button type="button" onclick="toggleProfileDropdown()" class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition text-left cursor-pointer border border-transparent hover:border-gray-200">
-                            <div class="h-7 w-7 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                        <button type="button" onclick="toggleProfileDropdown()" class="flex items-center gap-2 px-2.5 py-1.5 hover:bg-slate-50 transition text-left cursor-pointer border border-transparent hover:border-slate-200" style="border-radius: var(--radius-md);">
+                            <div class="avatar-circle h-7 w-7 bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                             <div class="hidden sm:block text-[11px]">
-                                <span class="block font-bold text-gray-800 leading-none">{{ auth()->user()->name }}</span>
-                                <span class="block text-[8px] text-gray-400 font-extrabold uppercase tracking-wider mt-0.5">{{ auth()->user()->role === 'admin' ? 'Superadmin' : auth()->user()->role }}</span>
+                                <span class="block font-bold text-slate-800 leading-none">{{ auth()->user()->name }}</span>
+                                <span class="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{{ auth()->user()->role === 'admin' ? 'Superadmin' : auth()->user()->role }}</span>
                             </div>
-                            <i class="fa-solid fa-chevron-down text-gray-400 text-[8px] ml-1"></i>
+                            <i class="fa-solid fa-chevron-down text-slate-400 text-[8px] ml-1"></i>
                         </button>
-                        
-                        <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl py-1.5 hidden z-50">
+
+                        <div id="profile-dropdown" class="absolute right-0 mt-2 w-52 bg-white border border-slate-200 py-1.5 hidden z-50" style="border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);">
                             <div class="px-4 py-2 border-b border-gray-100 sm:hidden">
                                 <span class="block font-bold text-gray-800 text-xs truncate">{{ auth()->user()->name }}</span>
                                 <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-wider truncate mt-0.5">{{ auth()->user()->role }}</span>
@@ -352,18 +404,26 @@
             }
         }
 
-        // Toggle mobile search input
+        // Toggle mobile search dropdown
         function toggleMobileSearch() {
-            const container = document.getElementById('header-search-container');
-            if (container) {
-                container.classList.toggle('hidden');
-                container.classList.toggle('flex');
-                if (container.classList.contains('flex')) {
-                    const input = container.querySelector('input');
-                    if (input) input.focus();
-                }
+            const mobileContainer = document.getElementById('mobile-search-container');
+            if (!mobileContainer) return;
+            const isHidden = mobileContainer.classList.contains('hidden');
+            mobileContainer.classList.toggle('hidden', !isHidden);
+            if (isHidden) {
+                const input = document.getElementById('mobile-search-input');
+                if (input) setTimeout(() => input.focus(), 50);
             }
         }
+
+        // Close mobile search when clicking outside
+        document.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('header-search-wrapper');
+            const mobileContainer = document.getElementById('mobile-search-container');
+            if (wrapper && mobileContainer && !wrapper.contains(e.target)) {
+                mobileContainer.classList.add('hidden');
+            }
+        });
 
         // Profile dropdown toggle
         function toggleProfileDropdown() {
@@ -387,7 +447,7 @@
                 }
             });
         }
-        
+
         function showSuccess(message) {
             Swal.fire({
                 icon: 'success',
@@ -452,14 +512,6 @@
             if (submenu && btn) {
                 submenu.classList.toggle('show');
                 btn.classList.toggle('active');
-                const icon = btn.querySelector('.chevron');
-                if (icon) {
-                    if (submenu.classList.contains('show')) {
-                        icon.className = "fa-solid fa-chevron-down text-[9px] chevron transition-transform duration-200";
-                    } else {
-                        icon.className = "fa-solid fa-chevron-right text-[9px] chevron transition-transform duration-200";
-                    }
-                }
             }
         }
 
@@ -474,10 +526,6 @@
                     const btn = document.getElementById(`btn-${grupId}`);
                     if (btn) {
                         btn.classList.add('active');
-                        const icon = btn.querySelector('.chevron');
-                        if (icon) {
-                            icon.className = "fa-solid fa-chevron-down text-[9px] chevron transition-transform duration-200";
-                        }
                     }
                 }
             }

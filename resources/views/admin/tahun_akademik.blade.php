@@ -3,77 +3,78 @@
 @section('title', 'Tahun Akademik - CBT STIKES Muhammadiyah Lhokseumawe')
 
 @section('admin-content')
-<div class="space-y-8">
-    <!-- Page Header (SIAKAD style) -->
-    <div class="mb-4">
-        <p class="text-xs text-slate-400 mb-1">STIKESMU &gt; Admin &gt; Tahun Akademik</p>
-        <div class="flex flex-wrap items-start justify-between gap-3 pb-3 border-b-2 border-green-700">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                    <span class="w-1.5 h-6 bg-green-700 rounded-full inline-block"></span>
-                    Tahun Akademik
-                </h1>
-                <p class="text-xs text-slate-500 mt-0.5">Kelola tahun akademik aktif dan semester untuk pelaksanaan ujian.</p>
-            </div>
-            <button type="button" onclick="openAddModal()" class="rounded border border-transparent bg-green-700 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white hover:bg-green-800 transition flex items-center gap-1.5 cursor-pointer shadow-none">
-                <i class="fa-solid fa-plus text-xs"></i>
-                <span>Tambah Tahun Akademik</span>
-            </button>
+<div class="space-y-5">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-header-title">
+                <span class="title-bar"></span>
+                Tahun Akademik
+            </h1>
+            <p class="page-header-subtitle">Kelola tahun akademik aktif dan semester untuk pelaksanaan ujian CBT.</p>
         </div>
+        <button type="button" onclick="openAddModal()" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-900 text-white px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-sm" style="border-radius: var(--radius-md);">
+            <i class="fa-solid fa-plus"></i>
+            Tambah Tahun Akademik
+        </button>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <!-- Table Container -->
+    <div class="card overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left">
                 <thead>
-                    <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                        <th class="py-4 px-6">Tahun Akademik</th>
-                        <th class="py-4 px-6">Tahun Mulai</th>
-                        <th class="py-4 px-6">Semester</th>
-                        <th class="py-4 px-6 text-center">Status</th>
-                        <th class="py-4 px-6 text-right">Aksi</th>
+                    <tr>
+                        <th>Tahun Akademik</th>
+                        <th>Tahun Mulai</th>
+                        <th>Semester</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="text-sm divide-y divide-gray-100">
+                <tbody>
                     @forelse ($tahunAkademik as $ta)
-                    <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="py-4 px-6 font-semibold text-gray-900">{{ $ta->nama }}</td>
-                        <td class="py-4 px-6 font-mono">{{ $ta->tahun_mulai }}</td>
-                        <td class="py-4 px-6 capitalize">{{ $ta->semester }}</td>
-                        <td class="py-4 px-6 text-center">
+                    <tr>
+                        <td class="font-semibold text-slate-900">{{ $ta->nama }}</td>
+                        <td class="font-mono text-slate-600">{{ $ta->tahun_mulai }}</td>
+                        <td class="capitalize text-slate-600">{{ $ta->semester }}</td>
+                        <td class="text-center">
                             @if ($ta->is_aktif)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                            <span class="badge badge-success">
                                 <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
                                 Aktif
                             </span>
                             @else
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
-                                Tidak Aktif
-                            </span>
+                            <span class="badge badge-neutral">Tidak Aktif</span>
                             @endif
                         </td>
-                        <td class="py-4 px-6 text-right space-x-2">
-                            @if (!$ta->is_aktif)
-                            <button type="button" onclick="setAktif({{ $ta->id }}, '{{ $ta->nama }}')" class="bg-green-50 hover:bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-circle-check"></i>
-                                <span>Aktifkan</span>
-                            </button>
-                            @endif
-                            <button type="button" onclick="openEditModal({{ json_encode($ta) }})" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                                <span>Edit</span>
-                            </button>
-                            @if (!$ta->is_aktif)
-                            <button type="button" onclick="confirmDelete({{ $ta->id }}, '{{ $ta->nama }}')" class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-trash-can"></i>
-                                <span>Hapus</span>
-                            </button>
-                            @endif
+                        <td class="text-right">
+                            <div class="inline-flex items-center gap-1.5">
+                                @if (!$ta->is_aktif)
+                                <button type="button" onclick="setAktif({{ $ta->id }}, '{{ $ta->nama }}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 hover:bg-primary-100 text-primary-700 text-[11px] font-bold transition-colors" style="border-radius: var(--radius-sm);">
+                                    <i class="fa-solid fa-circle-check text-[10px]"></i> Aktifkan
+                                </button>
+                                @endif
+                                <button type="button" onclick="openEditModal({{ json_encode($ta) }})" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold transition-colors" style="border-radius: var(--radius-sm);">
+                                    <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit
+                                </button>
+                                @if (!$ta->is_aktif)
+                                <button type="button" onclick="confirmDelete({{ $ta->id }}, '{{ $ta->nama }}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-[11px] font-bold transition-colors" style="border-radius: var(--radius-sm);">
+                                    <i class="fa-solid fa-trash-can text-[10px]"></i> Hapus
+                                </button>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-8 text-center text-gray-400">Tidak ada data tahun akademik.</td>
+                        <td colspan="5" class="py-12 text-center">
+                            <div class="flex flex-col items-center gap-2">
+                                <i class="fa-regular fa-calendar-xmark text-2xl text-slate-300"></i>
+                                <p class="text-sm text-slate-400 font-medium">Belum ada data tahun akademik</p>
+                                <p class="text-xs text-slate-400">Klik "Tambah Tahun Akademik" untuk memulai.</p>
+                            </div>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -83,62 +84,72 @@
 </div>
 
 <!-- Modal Tambah -->
-<div id="add-modal" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden transform scale-95 transition-all duration-300">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h3 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-calendar-plus text-primary mr-2"></i>Tambah Tahun Akademik</h3>
-            <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+<div id="add-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full overflow-hidden" style="border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);">
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-plus text-primary-700"></i>
+                Tambah Tahun Akademik
+            </h3>
+            <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 w-7 h-7 flex items-center justify-center hover:bg-slate-100 transition" style="border-radius: var(--radius-sm);">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-        <form id="add-form" class="p-6 space-y-4">
+        <form id="add-form" class="flex flex-col max-h-[85vh]">
             @csrf
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Tahun Mulai</label>
-                <input type="number" name="tahun_mulai" required placeholder="Contoh: 2025" min="2000" max="2099" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Tahun Mulai</label>
+                    <input type="number" name="tahun_mulai" required placeholder="Contoh: 2025" min="2000" max="2099" class="w-full">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Semester</label>
+                    <select name="semester" required class="w-full">
+                        <option value="ganjil">Ganjil</option>
+                        <option value="genap">Genap</option>
+                    </select>
+                </div>
             </div>
-
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Semester</label>
-                <select name="semester" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
-                    <option value="ganjil">Ganjil</option>
-                    <option value="genap">Genap</option>
-                </select>
-            </div>
-
-            <div class="pt-4 flex justify-end space-x-3 border-t border-gray-100">
-                <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-primary hover:bg-blue-800 text-white rounded-lg text-sm font-semibold transition shadow-sm">Simpan</button>
+            <div class="px-6 py-4 flex justify-end gap-2 border-t border-slate-100 bg-slate-50 flex-shrink-0">
+                <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs font-semibold hover:bg-slate-100 transition cursor-pointer" style="border-radius: var(--radius-md);">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-900 text-white text-xs font-bold transition cursor-pointer" style="border-radius: var(--radius-md);">Simpan</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- Modal Edit -->
-<div id="edit-modal" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden transform scale-95 transition-all duration-300">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h3 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-calendar-check text-primary mr-2"></i>Edit Tahun Akademik</h3>
-            <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+<div id="edit-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full overflow-hidden" style="border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);">
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-check text-primary-700"></i>
+                Edit Tahun Akademik
+            </h3>
+            <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 w-7 h-7 flex items-center justify-center hover:bg-slate-100 transition" style="border-radius: var(--radius-sm);">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-        <form id="edit-form" class="p-6 space-y-4">
+        <form id="edit-form" class="flex flex-col max-h-[85vh]">
             @csrf
             @method('PUT')
-            <input type="hidden" id="edit-id">
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Tahun Mulai</label>
-                <input type="number" id="edit-tahun_mulai" name="tahun_mulai" required min="2000" max="2099" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <input type="hidden" id="edit-id">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Tahun Mulai</label>
+                    <input type="number" id="edit-tahun_mulai" name="tahun_mulai" required min="2000" max="2099" class="w-full">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Semester</label>
+                    <select id="edit-semester" name="semester" required class="w-full">
+                        <option value="ganjil">Ganjil</option>
+                        <option value="genap">Genap</option>
+                    </select>
+                </div>
             </div>
-
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Semester</label>
-                <select id="edit-semester" name="semester" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition">
-                    <option value="ganjil">Ganjil</option>
-                    <option value="genap">Genap</option>
-                </select>
-            </div>
-
-            <div class="pt-4 flex justify-end space-x-3 border-t border-gray-100">
-                <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-primary hover:bg-blue-800 text-white rounded-lg text-sm font-semibold transition shadow-sm">Simpan</button>
+            <div class="px-6 py-4 flex justify-end gap-2 border-t border-slate-100 bg-slate-50 flex-shrink-0">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs font-semibold hover:bg-slate-100 transition cursor-pointer" style="border-radius: var(--radius-md);">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-900 text-white text-xs font-bold transition cursor-pointer" style="border-radius: var(--radius-md);">Simpan</button>
             </div>
         </form>
     </div>

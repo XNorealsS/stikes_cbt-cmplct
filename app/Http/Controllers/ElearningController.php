@@ -264,6 +264,21 @@ class ElearningController extends Controller
         return view('mahasiswa.materi', compact('materis'));
     }
 
+    public function mahasiswaMateriShow($id)
+    {
+        $user = auth()->user();
+        $materi = Materi::with(['course', 'user'])
+            ->where('is_aktif', true)
+            ->where(function ($q) use ($user) {
+                $q->whereNull('class_id')->orWhere('class_id', $user->class_id);
+            })
+            ->findOrFail($id);
+
+        $this->recordView($materi->id);
+
+        return view('mahasiswa.materi_detail', compact('materi'));
+    }
+
     public function mahasiswaMateriDownload($id)
     {
         $user  = auth()->user();
@@ -273,12 +288,12 @@ class ElearningController extends Controller
             })
             ->findOrFail($id);
 
-        if ($materi->file_path) {
+        if ($materi->file_path && Storage::disk('public')->exists($materi->file_path)) {
             $this->recordView($materi->id);
             return Storage::disk('public')->download($materi->file_path);
         }
 
-        return redirect()->back()->with('error', 'File tidak tersedia.');
+        return redirect()->back()->with('error', 'Berkas fisik file tidak ditemukan di server.');
     }
 
     public function mahasiswaMateriOpen($id)
