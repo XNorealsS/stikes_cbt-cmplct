@@ -57,15 +57,15 @@
             </div>
             
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse" style="min-width: 780px;">
                     <thead>
-                        <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                            <th class="py-4 px-6 w-20">Kode</th>
-                            <th class="py-4 px-6">Mata Kuliah</th>
-                            <th class="py-4 px-6">Judul Materi</th>
-                            <th class="py-4 px-6 w-24">Tipe</th>
-                            <th class="py-4 px-6">Dosen</th>
-                            <th class="py-4 px-6 text-right w-48">Aksi</th>
+                        <tr class="bg-green-700 text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="py-3 px-4" style="min-width: 95px; width: 95px;">Kode</th>
+                            <th class="py-3 px-4" style="min-width: 180px; width: 180px;">Mata Kuliah</th>
+                            <th class="py-3 px-4" style="min-width: 280px; width: 280px;">Judul Materi</th>
+                            <th class="py-3 px-4" style="min-width: 110px; width: 110px;">Tipe</th>
+                            <th class="py-3 px-4" style="min-width: 160px; width: 160px;">Dosen</th>
+                            <th class="py-3 px-4 text-right" style="min-width: 160px; width: 160px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100">
@@ -183,16 +183,16 @@
             </div>
             
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse" style="min-width: 820px;">
                     <thead>
-                        <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                            <th class="py-4 px-6 w-20">Kode</th>
-                            <th class="py-4 px-6">Mata Kuliah</th>
-                            <th class="py-4 px-6">Judul Tugas</th>
-                            <th class="py-4 px-6 w-20 text-center">Poin</th>
-                            <th class="py-4 px-6">Dosen</th>
-                            <th class="py-4 px-6">Batas Waktu</th>
-                            <th class="py-4 px-6 text-right w-24">Aksi</th>
+                        <tr class="bg-green-700 text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="py-3 px-4" style="min-width: 95px; width: 95px;">Kode</th>
+                            <th class="py-3 px-4" style="min-width: 180px; width: 180px;">Mata Kuliah</th>
+                            <th class="py-3 px-4" style="min-width: 280px; width: 280px;">Judul Tugas</th>
+                            <th class="py-3 px-4 text-center" style="min-width: 80px; width: 80px;">Poin</th>
+                            <th class="py-3 px-4" style="min-width: 160px; width: 160px;">Dosen</th>
+                            <th class="py-3 px-4" style="min-width: 150px; width: 150px;">Batas Waktu</th>
+                            <th class="py-3 px-4 text-right" style="min-width: 120px; width: 120px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100">

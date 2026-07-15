@@ -48,67 +48,72 @@
     <!-- Materials Table -->
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse" style="min-width: 680px;">
                 <thead>
-                    <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                        <th class="py-4 px-6">Informasi Materi</th>
-                        <th class="py-4 px-6">Tipe Materi</th>
-                        <th class="py-4 px-6">Ditujukan Ke</th>
-                        <th class="py-4 px-6 text-center">Status</th>
-                        <th class="py-4 px-6 text-right">Aksi</th>
+                    <tr class="bg-green-700 text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="py-3 px-4">Informasi Materi</th>
+                        <th class="py-3 px-4">Tipe Materi</th>
+                        <th class="py-3 px-4">Ditujukan Ke</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
                     @forelse ($materis as $materi)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="py-4 px-6">
+                        <td class="py-3 px-4">
                             <span class="font-bold text-gray-900 block text-base">
                                 @if($materi->pertemuan_ke)
-                                    <span class="bg-emerald-50 text-emerald-800 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border border-emerald-150 mr-1.5 font-mono">Sesi {{ $materi->pertemuan_ke }}</span>
+                                    <span class="bg-emerald-55 text-emerald-800 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border border-emerald-150 mr-1.5 font-mono">Sesi {{ $materi->pertemuan_ke }}</span>
                                 @endif
                                 {{ $materi->judul }}
                             </span>
                             <span class="text-xs text-gray-450 block line-clamp-1 mt-0.5">{{ $materi->deskripsi ?? 'Tidak ada deskripsi' }}</span>
                         </td>
-                        <td class="py-4 px-6 capitalize">
+                        <td class="py-3 px-4 capitalize">
                             @if ($materi->tipe === 'file')
-                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
                                 <i class="fa-solid fa-file-pdf"></i> File
                             </span>
                             @elseif ($materi->tipe === 'link')
-                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100">
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100 whitespace-nowrap">
                                 <i class="fa-solid fa-link"></i> Tautan
                             </span>
                             @else
-                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-100">
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-100 whitespace-nowrap">
                                 <i class="fa-solid fa-align-left"></i> Teks
                             </span>
                             @endif
                         </td>
-                        <td class="py-4 px-6">
-                            <span class="block font-semibold text-gray-700">{{ $materi->classRoom ? $materi->classRoom->name : 'Semua Kelas' }}</span>
+                        <td class="py-3 px-4">
+                            <span class="block font-semibold text-gray-700 whitespace-nowrap">{{ $materi->classRoom ? $materi->classRoom->name : 'Semua Kelas' }}</span>
                         </td>
-                        <td class="py-4 px-6 text-center">
+                        <td class="py-3 px-4 text-center">
                             @if ($materi->is_aktif)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-150">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-150 whitespace-nowrap">
                                 Tayang
                             </span>
                             @else
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-150">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-150 whitespace-nowrap">
                                 Draft
                             </span>
                             @endif
                         </td>
-                        <td class="py-4 px-6 text-right space-x-1.5">
-                            <button type="button" onclick="checkProgress({{ $materi->id }}, '{{ $materi->judul }}')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold transition" title="Lihat Progress Membaca">
-                                <i class="fa-solid fa-users-viewfinder"></i>
-                            </button>
-                            <button type="button" onclick="openEditModal({{ json_encode($materi) }})" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button type="button" onclick="confirmDelete({{ $materi->id }}, '{{ $materi->judul }}')" class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
+                        <td class="py-3 px-4 text-right">
+                            <div class="flex items-center justify-end gap-1.5 flex-nowrap">
+                                <button type="button" onclick="checkProgress({{ $materi->id }}, '{{ $materi->judul }}')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Lihat Progress Membaca">
+                                    <i class="fa-solid fa-users-viewfinder text-[11px]"></i>
+                                    <span>Progress</span>
+                                </button>
+                                <button type="button" onclick="openEditModal({{ json_encode($materi) }})" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                                    <span>Edit</span>
+                                </button>
+                                <button type="button" onclick="confirmDelete({{ $materi->id }}, '{{ $materi->judul }}')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Hapus">
+                                    <i class="fa-solid fa-trash-can text-[11px]"></i>
+                                    <span>Hapus</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty

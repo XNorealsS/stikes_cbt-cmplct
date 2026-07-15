@@ -26,15 +26,15 @@
     <!-- History Card / Table -->
     <div class="bg-white border border-gray-100 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse" style="min-width: 800px;">
                 <thead>
-                    <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                        <th class="py-4 px-6">Nama Ujian</th>
-                        <th class="py-4 px-6">Mata Kuliah</th>
-                        <th class="py-4 px-6">Tanggal Mulai</th>
-                        <th class="py-4 px-6">Selesai Pengerjaan</th>
-                        <th class="py-4 px-6 text-center">Status</th>
-                        <th class="py-4 px-6 text-center">Nilai Akhir</th>
+                    <tr class="bg-green-700 text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="py-3 px-4" style="min-width: 220px; width: 220px;">Nama Ujian</th>
+                        <th class="py-3 px-4" style="min-width: 240px; width: 240px;">Mata Kuliah</th>
+                        <th class="py-3 px-4" style="min-width: 140px; width: 140px;">Tanggal Mulai</th>
+                        <th class="py-3 px-4" style="min-width: 140px; width: 140px;">Selesai Pengerjaan</th>
+                        <th class="py-3 px-4 text-center" style="min-width: 100px; width: 100px;">Status</th>
+                        <th class="py-3 px-4 text-center" style="min-width: 100px; width: 100px;">Nilai Akhir</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">

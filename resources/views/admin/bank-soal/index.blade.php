@@ -23,22 +23,26 @@
     </div>
 
     <!-- Filters Section -->
-    <div class="border border-slate-300 bg-white p-4 rounded-none shadow-none">
-        <form method="GET" action="{{ route('dosen.questions.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="border border-slate-200 bg-white p-4 rounded-lg shadow-none">
+        <form method="GET" action="{{ route('dosen.questions.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             <div>
-                <label for="course_id" class="block text-xs font-bold text-slate-700 uppercase mb-1">Mata Kuliah</label>
-                <select name="course_id" id="course_id" onchange="this.form.submit()" class="w-full border border-slate-300 rounded-none px-3 py-2 text-xs font-semibold focus:outline-none focus:border-green-600 bg-white text-slate-800">
+                <label for="course_id" class="flex items-center gap-1.5 text-xs font-bold text-slate-600 uppercase mb-1.5">
+                    <i class="fa-solid fa-book text-slate-400"></i> Mata Kuliah
+                </label>
+                <select name="course_id" id="course_id" onchange="this.form.submit()" class="w-full border border-slate-300 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:border-green-600 bg-white text-slate-800 cursor-pointer">
                     <option value="">-- Semua Mata Kuliah --</option>
                     @foreach ($courses as $c)
                         <option value="{{ $c->id }}" {{ $courseId == $c->id ? 'selected' : '' }}>{{ $c->name }} ({{ $c->code }})</option>
                     @endforeach
                 </select>
             </div>
-            <div class="md:col-span-2">
-                <label for="search" class="block text-xs font-bold text-slate-700 uppercase mb-1">Cari Nama Bank Soal</label>
+            <div class="sm:col-span-1 md:col-span-2">
+                <label for="search" class="flex items-center gap-1.5 text-xs font-bold text-slate-600 uppercase mb-1.5">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400"></i> Cari Nama Bank Soal
+                </label>
                 <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3 top-2.5 text-xs"></i>
-                    <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Ketik nama bank soal..." class="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-none text-xs focus:outline-none focus:border-green-600 bg-white text-slate-800">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 text-xs pointer-events-none"></i>
+                    <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Ketik nama bank soal..." class="w-full pl-9 pr-4 py-2.5 border border-slate-300 rounded-md text-sm focus:outline-none focus:border-green-600 bg-white text-slate-800">
                 </div>
             </div>
         </form>

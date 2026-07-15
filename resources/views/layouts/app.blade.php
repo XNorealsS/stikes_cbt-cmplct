@@ -183,11 +183,23 @@
 
         <!-- Right Side Container (Header + Main Content) -->
         <div class="flex-grow flex flex-col min-w-0 lg:ml-64">
-            <!-- Top Header Bar -->
-            <header class="topbar px-6 flex items-center justify-between z-25 relative">
-                <!-- Left: Hamburger Toggle & Breadcrumbs -->
-                <div class="flex items-center gap-3">
-                    <button type="button" onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800 lg:hidden transition mr-1">
+            <header class="topbar px-4 sm:px-6 flex items-center justify-between z-25 relative">
+                <!-- Mobile Search Overlay (covers full header width on mobile) -->
+                <div id="mobile-search-overlay" class="hidden absolute inset-0 bg-white z-50 md:hidden px-4 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm shrink-0"></i>
+                    <input type="text"
+                           id="mobile-search-input"
+                           onkeydown="handleHeaderSearch(event)"
+                           placeholder="Ketik untuk mencari..."
+                           class="flex-1 py-2 bg-transparent border-none outline-none text-sm text-slate-800 placeholder-slate-400">
+                    <button type="button" onclick="closeMobileSearch()" class="shrink-0 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition">
+                        <i class="fa-solid fa-xmark text-base"></i>
+                    </button>
+                </div>
+                
+                <!-- Left: Hamburger Toggle & Breadcrumbs / Title -->
+                <div class="flex items-center gap-2 max-w-[55%] overflow-hidden shrink-0">
+                    <button type="button" onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800 lg:hidden transition mr-1 shrink-0">
                         <i class="fa-solid fa-bars text-base"></i>
                     </button>
                     @php
@@ -210,14 +222,19 @@
                                 'url' => $url
                             ];
                         }
+                        $currentTitle = end($breadcrumbs)['name'] ?? 'Dashboard';
                     @endphp
-                    <nav class="flex text-[10px] font-bold text-gray-400 uppercase tracking-wider" aria-label="Breadcrumb">
-                        <ol class="inline-flex items-center space-x-1 sm:space-x-1.5">
-                            <li class="inline-flex items-center">
+                    <!-- Mobile page title -->
+                    <span class="sm:hidden text-slate-800 font-bold text-sm truncate whitespace-nowrap">{{ $currentTitle }}</span>
+                    
+                    <!-- Desktop breadcrumbs -->
+                    <nav class="hidden sm:flex text-[10px] font-bold text-gray-400 uppercase tracking-wider overflow-x-auto scrollbar-none" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 sm:space-x-1.5 whitespace-nowrap">
+                            <li class="inline-flex items-center whitespace-nowrap font-semibold">
                                 <span class="text-gray-400">STIKESMU</span>
                             </li>
                             @foreach ($breadcrumbs as $crumb)
-                                <li class="inline-flex items-center">
+                                <li class="inline-flex items-center whitespace-nowrap">
                                     <i class="fa-solid fa-chevron-right text-[8px] text-gray-300 mx-1"></i>
                                     @if ($loop->last)
                                         <span class="text-primary font-black">{{ $crumb['name'] }}</span>
@@ -230,40 +247,28 @@
                     </nav>
                 </div>
 
-                <!-- Middle: Search Bar (Admin & Dosen) -->
+                <!-- Middle: Search Bar (Admin & Dosen - Desktop only) -->
                 @if(auth()->user()->role === 'admin' || auth()->user()->role === 'dosen')
-                <div class="flex items-center flex-1 md:max-w-xs mx-2 md:mx-4 relative" id="header-search-wrapper">
-                    <!-- Mobile Search Trigger Button -->
-                    <button type="button" onclick="toggleMobileSearch()" class="md:hidden w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer" style="border-radius: var(--radius-md);">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                    </button>
-                    <!-- Desktop Search Input -->
-                    <div id="header-search-container" class="hidden md:flex items-center w-full relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                        <input type="text"
-                               onkeydown="handleHeaderSearch(event)"
-                               placeholder="Cari nama, NIM, NIDN, soal..."
-                               value="{{ request('search') }}"
-                               class="w-full pr-4 py-2 bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:border-primary-700 transition"
-                               style="border-radius: var(--radius-md); padding-left: 2.25rem !important;">
-                    </div>
-                    <!-- Mobile Search Dropdown -->
-                    <div id="mobile-search-container" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 p-2.5 shadow-lg z-50 md:hidden" style="border-radius: var(--radius-lg);">
-                        <div class="relative">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                            <input type="text"
-                                   id="mobile-search-input"
-                                   onkeydown="handleHeaderSearch(event)"
-                                   placeholder="Cari nama, NIM, NIDN, soal..."
-                                   class="w-full pr-4 py-2 bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:border-primary-700 transition"
-                                   style="border-radius: var(--radius-md); padding-left: 2.25rem !important;">
-                        </div>
-                    </div>
+                <div class="hidden md:flex items-center flex-1 max-w-md lg:max-w-lg mx-6 relative" id="header-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    <input type="text"
+                           id="header-search-input"
+                           onkeydown="handleHeaderSearch(event)"
+                           placeholder="Cari nama, NIM, NIDN, soal..."
+                           value="{{ request('search') }}"
+                           class="w-full py-2.5 bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-green-600 focus:outline-none transition rounded-lg"
+                           style="padding-left: 2.5rem !important; padding-right: 1rem !important;">
                 </div>
                 @endif
 
-                <!-- Right: Profile Dropdown & Notifications -->
-                <div class="flex items-center gap-4 ml-auto">
+                <!-- Right: Action Bar (Profile, Notifications & Mobile Search Trigger) -->
+                <div class="flex items-center gap-2 sm:gap-4 ml-auto">
+                    <!-- Mobile Search Trigger Button -->
+                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'dosen')
+                    <button type="button" onclick="toggleMobileSearch()" id="mobile-search-btn" class="md:hidden w-9 h-9 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition cursor-pointer">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    @endif
                     <!-- Live Digital Clock -->
                     <div class="hidden sm:flex font-mono text-[10px] font-semibold text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-md items-center gap-1.5">
                         <i class="fa-regular fa-clock text-slate-400 text-[9px]"></i>
@@ -404,15 +409,23 @@
             }
         }
 
-        // Toggle mobile search dropdown
+        // Toggle mobile search overlay
         function toggleMobileSearch() {
-            const mobileContainer = document.getElementById('mobile-search-container');
-            if (!mobileContainer) return;
-            const isHidden = mobileContainer.classList.contains('hidden');
-            mobileContainer.classList.toggle('hidden', !isHidden);
-            if (isHidden) {
+            const overlay = document.getElementById('mobile-search-overlay');
+            if (!overlay) return;
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
                 const input = document.getElementById('mobile-search-input');
-                if (input) setTimeout(() => input.focus(), 50);
+                if (input) input.focus();
+            }, 50);
+        }
+
+        function closeMobileSearch() {
+            const overlay = document.getElementById('mobile-search-overlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
             }
         }
 

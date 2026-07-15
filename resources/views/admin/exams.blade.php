@@ -25,13 +25,13 @@
     <!-- Exams Table Container (SIAKAD style) -->
     <div class="border border-slate-200 bg-white rounded-lg shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-xs text-slate-800 border-collapse">
+            <table class="w-full text-xs text-slate-800 border-collapse" style="min-width: 700px;">
                 <thead>
-                    <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold">
-                        <th class="px-4 py-3 text-left font-semibold uppercase tracking-wider text-[11px]">Nama Sesi Ujian</th>
+                    <tr class="bg-green-700 text-white font-bold">
+                        <th class="px-4 py-3 text-left font-semibold uppercase tracking-wider text-[11px]">Sesi Ujian</th>
                         <th class="px-4 py-3 text-left font-semibold uppercase tracking-wider text-[11px]">Mata Kuliah</th>
                         <th class="px-4 py-3 text-center font-semibold uppercase tracking-wider text-[11px]">Token</th>
-                        <th class="px-4 py-3 text-center font-semibold uppercase tracking-wider text-[11px]">Durasi &amp; Soal</th>
+                        <th class="px-4 py-3 text-center font-semibold uppercase tracking-wider text-[11px]">Durasi & Soal</th>
                         <th class="px-4 py-3 text-center font-semibold uppercase tracking-wider text-[11px]">Waktu Aktif</th>
                         <th class="px-4 py-3 text-right font-semibold uppercase tracking-wider text-[11px]">Aksi</th>
                     </tr>
@@ -40,19 +40,17 @@
                     @forelse ($exams as $exam)
                     <tr class="hover:bg-slate-50 transition">
                         <td class="px-4 py-3">
-                            <span class="font-bold text-slate-800 block">{{ $exam->title }}</span>
-                            <div class="space-y-0.5 mt-0.5">
-                                <span class="text-[10px] text-slate-400 block">Dosen: {{ $exam->dosen->name }}</span>
-                                @if ($exam->classRoom)
-                                    <span class="inline-block bg-emerald-50 text-emerald-800 text-[9px] font-bold px-1.5 py-0.5 border border-emerald-200 rounded">
-                                        Kelas: {{ $exam->classRoom->name }}
-                                    </span>
-                                @else
-                                    <span class="inline-block bg-slate-100 text-slate-600 text-[9px] font-bold px-1.5 py-0.5 border border-slate-200 rounded">
-                                        Kelas: Semua Kelas
-                                    </span>
-                                @endif
-                            </div>
+                            <span class="font-bold text-slate-800 block leading-tight">{{ $exam->title }}</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">{{ $exam->dosen->name }}</span>
+                            @if ($exam->classRoom)
+                                <span class="inline-block bg-emerald-50 text-emerald-800 text-[9px] font-bold px-1.5 py-0.5 border border-emerald-200 rounded mt-0.5">
+                                    {{ $exam->classRoom->name }}
+                                </span>
+                            @else
+                                <span class="inline-block bg-slate-100 text-slate-600 text-[9px] font-bold px-1.5 py-0.5 border border-slate-200 rounded mt-0.5">
+                                    Semua Kelas
+                                </span>
+                            @endif
                         </td>
                         <td class="px-4 py-3">
                             <span class="font-semibold text-slate-700 block">{{ $exam->course->name }}</span>
@@ -60,29 +58,35 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="inline-flex items-center space-x-1.5">
-                                <span id="token-text-{{ $exam->id }}" class="font-mono font-bold bg-emerald-50 border border-emerald-300 text-emerald-800 px-2.5 py-0.5 rounded text-[11px] tracking-wider">{{ $exam->token }}</span>
+                                <span id="token-text-{{ $exam->id }}" class="font-mono font-bold bg-emerald-50 border border-emerald-300 text-emerald-800 px-2 py-0.5 rounded text-[11px] tracking-wider">{{ $exam->token }}</span>
                                 <button type="button" onclick="regenerateToken({{ $exam->id }}, '{{ $exam->title }}')" title="Regenerasi Token Baru" class="text-emerald-700 hover:text-emerald-900 transition cursor-pointer p-1">
                                     <i class="fa-solid fa-arrows-rotate text-xs"></i>
                                 </button>
                             </div>
                         </td>
                         <td class="px-4 py-3 text-center">
-                            <span class="block text-slate-700 font-medium"><i class="fa-regular fa-clock mr-1 text-slate-400"></i>{{ $exam->duration_minutes }} Menit</span>
-                            <span class="block text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-list-check mr-1 text-slate-400"></i>{{ $exam->total_questions }} Soal ({{ $exam->is_random ? 'Acak' : 'Urut' }})</span>
+                            <span class="block text-slate-700 font-semibold whitespace-nowrap">
+                                <i class="fa-regular fa-clock mr-1 text-slate-400"></i>{{ $exam->duration_minutes }} Menit
+                            </span>
+                            <span class="block text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">
+                                <i class="fa-solid fa-list-check mr-1 text-slate-400"></i>{{ $exam->total_questions }} Soal ({{ $exam->is_random ? 'Acak' : 'Urut' }})
+                            </span>
                         </td>
                         <td class="px-4 py-3 text-center font-mono text-[10px] text-slate-500">
                             <span class="block"><span class="font-bold text-slate-700">Mulai:</span> {{ \Carbon\Carbon::parse($exam->start_time)->format('d/m/Y H:i') }}</span>
                             <span class="block mt-0.5"><span class="font-bold text-slate-700">Tutup:</span> {{ \Carbon\Carbon::parse($exam->end_time)->format('d/m/Y H:i') }}</span>
                         </td>
-                        <td class="px-4 py-3 text-right space-x-1.5">
-                            <button type="button" onclick="openEditModal({{ json_encode($exam) }})" class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition inline-flex items-center gap-1 shadow-none cursor-pointer">
-                                <i class="fa-solid fa-pen-to-square text-[10px]"></i>
-                                <span>Edit</span>
-                            </button>
-                            <button type="button" onclick="confirmDelete({{ $exam->id }}, '{{ $exam->title }}')" class="rounded border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 hover:bg-red-100 transition inline-flex items-center gap-1 shadow-none cursor-pointer">
-                                <i class="fa-solid fa-trash-can text-[10px]"></i>
-                                <span>Hapus</span>
-                            </button>
+                        <td class="px-4 py-3 text-right">
+                            <div class="flex items-center justify-end gap-1.5 flex-nowrap">
+                                <button type="button" onclick="openEditModal({{ json_encode($exam) }})" class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                                    <span>Edit</span>
+                                </button>
+                                <button type="button" onclick="confirmDelete({{ $exam->id }}, '{{ $exam->title }}')" class="rounded border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 transition inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap" title="Hapus">
+                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                    <span>Hapus</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty

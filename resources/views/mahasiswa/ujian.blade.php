@@ -54,16 +54,16 @@
 
         <div class="bg-white border border-gray-100 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse" style="min-width: 820px;">
                     <thead>
-                        <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                            <th class="py-4 px-6 w-20">Kode</th>
-                            <th class="py-4 px-6">Mata Kuliah / Ujian</th>
-                            <th class="py-4 px-6">Mulai</th>
-                            <th class="py-4 px-6">Selesai</th>
-                            <th class="py-4 px-6 w-24 text-center">Durasi</th>
-                            <th class="py-4 px-6">Dosen</th>
-                            <th class="py-4 px-6 text-right w-36">Aksi</th>
+                        <tr class="bg-green-700 text-xs font-bold text-white uppercase tracking-wider">
+                            <th class="py-3 px-4" style="min-width: 95px; width: 95px;">Kode</th>
+                            <th class="py-3 px-4" style="min-width: 280px; width: 280px;">Mata Kuliah / Ujian</th>
+                            <th class="py-3 px-4" style="min-width: 150px; width: 150px;">Mulai</th>
+                            <th class="py-3 px-4" style="min-width: 150px; width: 150px;">Selesai</th>
+                            <th class="py-3 px-4 text-center" style="min-width: 90px; width: 90px;">Durasi</th>
+                            <th class="py-3 px-4" style="min-width: 160px; width: 160px;">Dosen</th>
+                            <th class="py-3 px-4 text-right" style="min-width: 130px; width: 130px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100">

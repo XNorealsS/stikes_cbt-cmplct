@@ -25,30 +25,32 @@
     <!-- Courses Table -->
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse" style="min-width: 580px;">
                 <thead>
-                    <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                        <th class="py-4 px-6 w-1/4">Kode Mata Kuliah</th>
-                        <th class="py-4 px-6 w-1/3">Nama Mata Kuliah</th>
-                        <th class="py-4 px-6">Deskripsi</th>
-                        <th class="py-4 px-6 text-right w-1/4">Aksi</th>
+                    <tr class="bg-green-700 text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="py-3 px-4">Kode</th>
+                        <th class="py-3 px-4">Nama Mata Kuliah</th>
+                        <th class="py-3 px-4">Deskripsi</th>
+                        <th class="py-3 px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
                     @forelse ($courses as $course)
                     <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="py-4 px-6 font-mono font-bold text-primary">{{ $course->code }}</td>
-                        <td class="py-4 px-6 font-semibold text-gray-900">{{ $course->name }}</td>
-                        <td class="py-4 px-6 text-gray-500 text-xs md:text-sm">{{ $course->description ?? '-' }}</td>
-                        <td class="py-4 px-6 text-right space-x-2">
-                            <button type="button" onclick="openEditModal({{ json_encode($course) }})" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                                <span>Edit</span>
-                            </button>
-                            <button type="button" onclick="confirmDelete({{ $course->id }}, '{{ $course->name }}')" class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-trash-can"></i>
-                                <span>Hapus</span>
-                            </button>
+                        <td class="py-3 px-4 font-mono font-bold text-green-700 text-xs whitespace-nowrap">{{ $course->code }}</td>
+                        <td class="py-3 px-4 font-semibold text-gray-900">{{ $course->name }}</td>
+                        <td class="py-3 px-4 text-gray-500 text-xs">{{ $course->description ?? '-' }}</td>
+                        <td class="py-3 px-4 text-right">
+                            <div class="flex items-center justify-end gap-1.5 flex-nowrap">
+                                <button type="button" onclick="openEditModal({{ json_encode($course) }})" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                                    <span>Edit</span>
+                                </button>
+                                <button type="button" onclick="confirmDelete({{ $course->id }}, '{{ $course->name }}')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap" title="Hapus">
+                                    <i class="fa-solid fa-trash-can text-[11px]"></i>
+                                    <span>Hapus</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty

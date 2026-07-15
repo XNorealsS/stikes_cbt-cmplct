@@ -75,7 +75,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         <!-- Left Column: Content Preview (Col-span 8) -->
-        <div class="lg:col-span-8 space-y-4">
+        <div class="lg:col-span-8 space-y-4 order-2 lg:order-1">
             
             @if ($materi->tipe === 'text')
                 <!-- Placeholder / Option to Read -->
@@ -173,7 +173,7 @@
         </div>
 
         <!-- Right Column: Detail Metadata & Notes (Col-span 4) -->
-        <div class="lg:col-span-4 space-y-6">
+        <div class="lg:col-span-4 space-y-6 order-1 lg:order-2">
             
             <!-- Metadata Card -->
             <div class="bg-white border border-gray-150 p-6 shadow-sm space-y-4">

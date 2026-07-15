@@ -23,40 +23,42 @@
     </div>
 
     <!-- Classes Table -->
-    <div class="bg-white  border border-gray-100 shadow-sm overflow-hidden">
+    <div class="bg-white border border-gray-100 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse" style="min-width: 560px;">
                 <thead>
-                    <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                        <th class="py-4 px-6 w-1/3">Nama Kelas</th>
-                        <th class="py-4 px-6">Deskripsi</th>
-                        <th class="py-4 px-6 w-1/6 text-center">Jumlah Mahasiswa</th>
-                        <th class="py-4 px-6 text-right w-1/4">Aksi</th>
+                    <tr class="bg-green-700 text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="py-3 px-4">Nama Kelas</th>
+                        <th class="py-3 px-4">Deskripsi</th>
+                        <th class="py-3 px-4 text-center">Mahasiswa</th>
+                        <th class="py-3 px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
                     @forelse ($classes as $class)
                     <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="py-4 px-6 font-semibold text-gray-900">{{ $class->name }}</td>
-                        <td class="py-4 px-6 text-gray-500 text-xs md:text-sm">{{ $class->description ?? '-' }}</td>
-                        <td class="py-4 px-6 text-center font-bold text-gray-700">
-                            <span class="px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 text-xs">
+                        <td class="py-3 px-4 font-semibold text-gray-900 whitespace-nowrap">{{ $class->name }}</td>
+                        <td class="py-3 px-4 text-gray-500 text-xs">{{ $class->description ?? '-' }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-xs font-bold">
                                 {{ $class->users_count ?? $class->users->count() }} Orang
                             </span>
                         </td>
-                        <td class="py-4 px-6 text-right space-x-2">
-                            <button type="button" onclick="viewStudents({{ $class->id }})" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-users"></i>
-                                <span>Siswa</span>
-                            </button>
-                            <button type="button" onclick="openEditModal({{ json_encode($class) }})" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                                <span>Edit</span>
-                            </button>
-                            <button type="button" onclick="confirmDelete({{ $class->id }}, '{{ $class->name }}')" class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-trash-can"></i>
-                                <span>Hapus</span>
-                            </button>
+                        <td class="py-3 px-4 text-right">
+                            <div class="flex items-center justify-end gap-1.5 flex-nowrap">
+                                <button type="button" onclick="viewStudents({{ $class->id }})" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap" title="Lihat Siswa">
+                                    <i class="fa-solid fa-users text-[11px]"></i>
+                                    <span>Siswa</span>
+                                </button>
+                                <button type="button" onclick="openEditModal({{ json_encode($class) }})" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                                    <span>Edit</span>
+                                </button>
+                                <button type="button" onclick="confirmDelete({{ $class->id }}, '{{ $class->name }}')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap" title="Hapus">
+                                    <i class="fa-solid fa-trash-can text-[11px]"></i>
+                                    <span>Hapus</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty

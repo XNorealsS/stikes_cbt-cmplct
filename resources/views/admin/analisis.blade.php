@@ -38,7 +38,7 @@
                     <i class="fa-solid fa-arrows-spin"></i>
                     <span>Jalankan Analisis</span>
                 </button>
-                <a href="{{ route('admin.analisis.export', $selectedExam->id) }}" class="bg-secondary hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider transition shadow-sm text-center w-full sm:w-auto cursor-pointer flex items-center justify-center space-x-1.5">
+                <a href="{{ route('admin.analisis.export', $selectedExam->id) }}" class="bg-secondary bg-green-700 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider transition shadow-sm text-center w-full sm:w-auto cursor-pointer flex items-center justify-center space-x-1.5">
                     <i class="fa-solid fa-file-excel"></i>
                     <span>Export Excel</span>
                 </a>

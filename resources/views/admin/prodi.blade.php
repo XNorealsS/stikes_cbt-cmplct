@@ -24,48 +24,50 @@
 
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse" style="min-width: 600px;">
                 <thead>
-                    <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                        <th class="py-4 px-6">Kode Prodi</th>
-                        <th class="py-4 px-6">Nama Program Studi</th>
-                        <th class="py-4 px-6">Jenjang</th>
-                        <th class="py-4 px-6">Akreditasi</th>
-                        <th class="py-4 px-6 text-center">Status</th>
-                        <th class="py-4 px-6 text-right">Aksi</th>
+                    <tr class="bg-green-700 text-xs font-bold text-white uppercase tracking-wider">
+                        <th class="py-3 px-4">Kode</th>
+                        <th class="py-3 px-4">Nama Program Studi</th>
+                        <th class="py-3 px-4">Jenjang</th>
+                        <th class="py-3 px-4 text-center">Akreditasi</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
                     @forelse ($prodis as $prodi)
                     <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="py-4 px-6 font-mono font-bold text-primary">{{ $prodi->kode }}</td>
-                        <td class="py-4 px-6 font-semibold text-gray-900">{{ $prodi->nama }}</td>
-                        <td class="py-4 px-6 font-semibold">{{ $prodi->jenjang }}</td>
-                        <td class="py-4 px-6">
-                            <span class="px-2.5 py-1 text-xs font-bold bg-blue-50 text-blue-800 border border-blue-100 rounded-md">
+                        <td class="py-3 px-4 font-mono font-bold text-green-700 text-xs whitespace-nowrap">{{ $prodi->kode }}</td>
+                        <td class="py-3 px-4 font-semibold text-gray-900">{{ $prodi->nama }}</td>
+                        <td class="py-3 px-4 text-gray-600 whitespace-nowrap">{{ $prodi->jenjang }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-2 py-0.5 text-xs font-bold bg-blue-50 text-blue-800 border border-blue-100 rounded-md whitespace-nowrap">
                                 {{ $prodi->akreditasi ?? '-' }}
                             </span>
                         </td>
-                        <td class="py-4 px-6 text-center">
+                        <td class="py-3 px-4 text-center">
                             @if ($prodi->is_aktif)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-150">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 whitespace-nowrap">
                                 Aktif
                             </span>
                             @else
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-150">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 whitespace-nowrap">
                                 Nonaktif
                             </span>
                             @endif
                         </td>
-                        <td class="py-4 px-6 text-right space-x-2">
-                            <button type="button" onclick="openEditModal({{ json_encode($prodi) }})" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                                <span>Edit</span>
-                            </button>
-                            <button type="button" onclick="confirmDelete({{ $prodi->id }}, '{{ $prodi->nama }}')" class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center space-x-1">
-                                <i class="fa-solid fa-trash-can"></i>
-                                <span>Hapus</span>
-                            </button>
+                        <td class="py-3 px-4 text-right">
+                            <div class="flex items-center justify-end gap-1.5 flex-nowrap">
+                                <button type="button" onclick="openEditModal({{ json_encode($prodi) }})" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center gap-1.5 whitespace-nowrap" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                                    <span>Edit</span>
+                                </button>
+                                <button type="button" onclick="confirmDelete({{ $prodi->id }}, '{{ $prodi->nama }}')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition duration-150 inline-flex items-center gap-1.5 whitespace-nowrap" title="Hapus">
+                                    <i class="fa-solid fa-trash-can text-[11px]"></i>
+                                    <span>Hapus</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
