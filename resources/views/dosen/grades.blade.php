@@ -118,6 +118,10 @@
             $avgScore = $scores->count() > 0 ? $scores->average() : 0;
             $maxScore = $scores->count() > 0 ? $scores->max() : 0;
             $minScore = $scores->count() > 0 ? $scores->min() : 0;
+
+            $hasEssayQuestions = $selectedExam->bankSoal
+                ? $selectedExam->bankSoal->questions()->where('question_type', 'essai')->exists()
+                : \App\Models\Question::where('course_id', $selectedExam->course_id)->where('question_type', 'essai')->exists();
         @endphp
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 no-print">
@@ -167,6 +171,9 @@
                             <th class="px-4 py-3 text-center font-semibold uppercase tracking-wider text-[11px] border-r border-slate-200">Waktu Mulai</th>
                             <th class="px-4 py-3 text-center font-semibold uppercase tracking-wider text-[11px] border-r border-slate-200">Waktu Selesai</th>
                             <th class="px-4 py-3 text-center font-semibold uppercase tracking-wider text-[11px] border-r border-slate-200">Status</th>
+                            @if ($hasEssayQuestions)
+                            <th class="px-4 py-3 text-center font-semibold uppercase tracking-wider text-[11px] border-r border-slate-200 w-28 no-print">Koreksi</th>
+                            @endif
                             <th class="px-4 py-3 text-right font-semibold uppercase tracking-wider text-[11px] w-32">Nilai Akhir</th>
                         </tr>
                     </thead>
@@ -183,13 +190,39 @@
                                     {{ $g->status === 'finished' ? 'Selesai' : 'Sedang Ujian' }}
                                 </span>
                             </td>
+                            @if ($hasEssayQuestions)
+                            <td class="px-4 py-3 text-center border-r border-slate-200 no-print">
+                                @if ($g->status === 'finished')
+                                    @php
+                                        $ungradedCount = \App\Models\StudentAnswer::where('student_exam_id', $g->id)
+                                            ->whereNull('is_correct')
+                                            ->whereHas('question', function($q) {
+                                                $q->where('question_type', 'essai');
+                                            })->count();
+                                    @endphp
+                                    @if ($ungradedCount > 0)
+                                        <a href="{{ route('dosen.student-exams.koreksi-essay', ['id' => $g->id]) }}" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-2 rounded text-[10px] uppercase tracking-wider transition shadow-sm cursor-pointer flex items-center justify-center space-x-1 mx-auto w-24">
+                                            <i class="fa-solid fa-triangle-exclamation text-[9px]"></i>
+                                            <span>Koreksi ({{ $ungradedCount }})</span>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('dosen.student-exams.koreksi-essay', ['id' => $g->id]) }}" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-1.5 px-2 rounded text-[10px] uppercase tracking-wider transition shadow-sm cursor-pointer flex items-center justify-center space-x-1 mx-auto w-24">
+                                            <i class="fa-solid fa-circle-check text-[9px]"></i>
+                                            <span>Selesai</span>
+                                        </a>
+                                    @endif
+                                @else
+                                    <span class="text-slate-400 italic text-[10px]">Belum Selesai</span>
+                                @endif
+                            </td>
+                            @endif
                             <td class="px-4 py-3 text-right font-mono font-bold text-sm {{ $g->score >= 70 ? 'text-emerald-700' : 'text-rose-700' }}">
                                 {{ $g->score !== null ? number_format($g->score, 2) : '0.00' }}
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-slate-400">Belum ada mahasiswa yang mengerjakan ujian ini.</td>
+                            <td colspan="{{ $hasEssayQuestions ? 8 : 7 }}" class="px-4 py-8 text-center text-slate-400">Belum ada mahasiswa yang mengerjakan ujian ini.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -371,8 +404,8 @@
             </button>
         </div>
     </div>
-    </div>
 </div>
+
 @endsection
 
 @section('scripts')

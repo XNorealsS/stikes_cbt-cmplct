@@ -53,9 +53,15 @@
                             </span>
                         </td>
                         <td class="py-4 px-6 text-center">
-                            <span class="font-mono font-black text-lg {{ $h->score >= 70 ? 'text-secondary' : 'text-red-600' }}">
-                                {{ number_format($h->score, 2) }}
-                            </span>
+                            @if ($h->hasUnfinishedEssayGrading())
+                                <span class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded inline-block animate-pulse">
+                                    <i class="fa-solid fa-hourglass-half mr-1 text-[10px]"></i> Menunggu Hasil
+                                </span>
+                            @else
+                                <span class="font-mono font-black text-lg {{ $h->score >= 70 ? 'text-secondary' : 'text-red-600' }}">
+                                    {{ number_format($h->score, 2) }}
+                                </span>
+                            @endif
                         </td>
                     </tr>
                     @empty

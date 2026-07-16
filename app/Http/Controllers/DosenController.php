@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Question;
 use App\Models\Exam;
 use App\Models\StudentExam;
+use App\Models\StudentAnswer;
 use App\Models\ActivityLog;
 use App\Models\Ruang;
 use App\Models\Sesi;
@@ -198,7 +199,27 @@ class DosenController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        $examId = $request->query('exam_id', $exams->first()?->id);
+        // Smart UX auto-select: prioritize exam with ungraded essays
+        $defaultExamId = null;
+        foreach ($exams as $e) {
+            $hasPending = $e->studentExams()
+                ->whereHas('studentAnswers', function($query) {
+                    $query->whereNull('is_correct')
+                          ->whereHas('question', function($q) {
+                              $q->where('question_type', 'essai');
+                          });
+                })->exists();
+            if ($hasPending) {
+                $defaultExamId = $e->id;
+                break;
+            }
+        }
+
+        if (!$defaultExamId) {
+            $defaultExamId = $exams->first()?->id;
+        }
+
+        $examId = $request->query('exam_id', $defaultExamId);
         $selectedExam = null;
         $grades = [];
 
@@ -350,5 +371,146 @@ class DosenController extends Controller
         }
 
         return response()->download($tempFile, 'template_impor_soal_word.docx')->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Get essay answers for a specific student exam
+     */
+    public function getEssayAnswers($id)
+    {
+        $studentExam = StudentExam::with('user')->findOrFail($id);
+        $exam = Exam::findOrFail($studentExam->exam_id);
+        
+        if (auth()->user()->role !== 'admin' && $exam->dosen_id !== auth()->id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
+        $answers = StudentAnswer::with('question')
+            ->where('student_exam_id', $studentExam->id)
+            ->whereHas('question', function($query) {
+                $query->where('question_type', 'essai');
+            })
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'student' => $studentExam->user,
+            'answers' => $answers
+        ]);
+    }
+
+    /**
+     * Grade essay answers and recalculate score
+     */
+    public function gradeEssay(Request $request, $id)
+    {
+        $studentExam = StudentExam::findOrFail($id);
+        $exam = Exam::findOrFail($studentExam->exam_id);
+
+        if (auth()->user()->role !== 'admin' && $exam->dosen_id !== auth()->id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
+        $request->validate([
+            'grades' => 'required|array',
+            'grades.*.answer_id' => 'required|exists:student_answers,id',
+            'grades.*.is_correct' => 'required|boolean'
+        ]);
+
+        \Illuminate\Support\Facades\DB::transaction(function() use ($request, $studentExam) {
+            foreach ($request->input('grades') as $grade) {
+                $ans = StudentAnswer::where('student_exam_id', $studentExam->id)
+                    ->where('id', $grade['answer_id'])
+                    ->first();
+                if ($ans) {
+                    $ans->is_correct = (bool)$grade['is_correct'];
+                    $ans->save();
+                }
+            }
+
+            // Recalculate score
+            $allAnswers = StudentAnswer::where('student_exam_id', $studentExam->id)->get();
+            $correctCount = $allAnswers->where('is_correct', true)->count();
+            $totalCount = count($allAnswers);
+
+            $score = $totalCount > 0 ? ($correctCount / $totalCount) * 100 : 0;
+            $studentExam->score = $score;
+            $studentExam->save();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Jawaban essay berhasil dinilai dan skor akhir dihitung ulang.'
+        ]);
+    }
+
+    /**
+     * Show dedicated essay correction page
+     */
+    public function showEssayCorrection($id)
+    {
+        $studentExam = StudentExam::with('user', 'exam.bankSoal')->findOrFail($id);
+        $exam = $studentExam->exam;
+        
+        if (auth()->user()->role !== 'admin' && $exam->dosen_id !== auth()->id()) {
+            abort(403, 'Unauthorized.');
+        }
+
+        $answers = StudentAnswer::with('question')
+            ->where('student_exam_id', $studentExam->id)
+            ->whereHas('question', function($query) {
+                $query->where('question_type', 'essai');
+            })
+            ->get();
+
+        return view('dosen.koreksi-essay', compact('studentExam', 'exam', 'answers'));
+    }
+
+    /**
+     * Store essay grades from dedicated correction page
+     */
+    public function storeEssayCorrection(Request $request, $id)
+    {
+        $studentExam = StudentExam::with('exam')->findOrFail($id);
+        $exam = $studentExam->exam;
+        
+        if (auth()->user()->role !== 'admin' && $exam->dosen_id !== auth()->id()) {
+            abort(403, 'Unauthorized.');
+        }
+
+        $request->validate([
+            'grade' => 'required|array',
+            'grade.*' => 'required|in:1,0,pending'
+        ]);
+
+        \Illuminate\Support\Facades\DB::transaction(function() use ($request, $studentExam) {
+            foreach ($request->input('grade') as $answerId => $gradeVal) {
+                $ans = StudentAnswer::where('student_exam_id', $studentExam->id)
+                    ->where('id', $answerId)
+                    ->first();
+                if ($ans) {
+                    if ($gradeVal === '1') {
+                        $ans->is_correct = true;
+                    } elseif ($gradeVal === '0') {
+                        $ans->is_correct = false;
+                    } else {
+                        $ans->is_correct = null;
+                    }
+                    $ans->save();
+                }
+            }
+
+            // Recalculate score
+            $allAnswers = StudentAnswer::where('student_exam_id', $studentExam->id)->get();
+            $correctCount = $allAnswers->where('is_correct', true)->count();
+            $totalCount = count($allAnswers);
+
+            $score = $totalCount > 0 ? ($correctCount / $totalCount) * 100 : 0;
+            $studentExam->score = $score;
+            $studentExam->save();
+        });
+
+        return redirect()->route('dosen.grades.index', ['exam_id' => $exam->id])
+            ->with('success', 'Jawaban essay berhasil dinilai dan nilai akhir dihitung ulang.');
     }
 }

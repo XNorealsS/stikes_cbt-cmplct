@@ -122,12 +122,13 @@ class AnalisisController extends Controller
             fputcsv($file, ["Reliabilitas (Cronbach Alpha): " . number_format($cronbach ?? 0, 4)]);
             fputcsv($file, []);
 
-            fputcsv($file, ['No', 'Pertanyaan', 'Tingkat Kesukaran', 'Kategori TK', 'Daya Beda', 'Kategori DB', 'Benar', 'Salah', 'Tidak Jawab']);
+            fputcsv($file, ['No', 'Pertanyaan', 'Tipe Soal', 'Tingkat Kesukaran', 'Kategori TK', 'Daya Beda', 'Kategori DB', 'Benar', 'Salah', 'Tidak Jawab']);
 
             foreach ($analyses as $i => $a) {
                 fputcsv($file, [
                     $i + 1,
                     mb_substr(strip_tags($a['question_text']), 0, 80),
+                    $a['question_type'] === 'essai' ? 'Essay' : 'Pilihan Ganda',
                     number_format($a['tingkat_kesukaran'], 4),
                     $a['kategori_tk'],
                     number_format($a['daya_beda'], 4),
@@ -219,6 +220,7 @@ class AnalisisController extends Controller
             $analyses[] = [
                 'question_id'        => $qId,
                 'question_text'      => $question->question_text,
+                'question_type'      => $question->question_type,
                 'tingkat_kesukaran'  => round($p, 4),
                 'kategori_tk'        => $kategoriTk,
                 'daya_beda'          => round($d, 4),

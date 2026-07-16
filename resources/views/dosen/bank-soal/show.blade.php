@@ -81,7 +81,7 @@
 
     <!-- Questions list -->
     <div class="space-y-4">
-        <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest border-b pb-2"><i class="fa-solid fa-list-ol mr-1"></i> I. Soal Pilihan Ganda</h3>
+        <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest border-b pb-2"><i class="fa-solid fa-list-ol mr-1"></i> I. Daftar Pertanyaan</h3>
         
         <div class="space-y-4">
             @forelse ($questions as $index => $q)
@@ -94,6 +94,9 @@
                             </span>
                             <span class="px-2.5 py-0.5 text-[9px] font-bold rounded bg-gray-100 text-gray-700 uppercase tracking-wide border border-gray-200">
                                 {{ $q->difficulty }}
+                            </span>
+                            <span class="{{ $q->questionTypeBadge() }} px-2.5 py-0.5 text-[9px] font-bold rounded uppercase tracking-wide border">
+                                {{ $q->question_type === 'essai' ? 'Essay' : 'Pilihan Ganda' }}
                             </span>
                             @if ($q->category)
                                 <span class="px-2.5 py-0.5 text-[9px] font-bold rounded bg-blue-50 text-primary uppercase tracking-wide border border-blue-100">
@@ -120,29 +123,36 @@
                             {!! nl2br(e($q->question_text)) !!}
                         </div>
 
-                        <!-- Options List -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-                            <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'A' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
-                                <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'A' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">A</span>
-                                <span class="flex-1 truncate">{{ $q->option_a }}</span>
+                        <!-- Options List / Reference Answer -->
+                        @if($q->question_type === 'essai')
+                            <div class="p-4 bg-amber-50 border border-amber-250 text-amber-900 rounded-xl mt-4">
+                                <span class="font-bold block mb-1 text-[11px]"><i class="fa-solid fa-key mr-1"></i> Jawaban Referensi / Kunci:</span>
+                                <p class="text-gray-700 whitespace-pre-wrap font-medium">{{ $q->correct_option ?: 'Tidak ada referensi jawaban.' }}</p>
                             </div>
-                            <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'B' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
-                                <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'B' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">B</span>
-                                <span class="flex-1 truncate">{{ $q->option_b }}</span>
+                        @else
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                                <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'A' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
+                                    <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'A' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">A</span>
+                                    <span class="flex-1 truncate">{{ $q->option_a }}</span>
+                                </div>
+                                <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'B' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
+                                    <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'B' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">B</span>
+                                    <span class="flex-1 truncate">{{ $q->option_b }}</span>
+                                </div>
+                                <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'C' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
+                                    <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'C' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">C</span>
+                                    <span class="flex-1 truncate">{{ $q->option_c }}</span>
+                                </div>
+                                <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'D' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
+                                    <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'D' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">D</span>
+                                    <span class="flex-1 truncate">{{ $q->option_d }}</span>
+                                </div>
+                                <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'E' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
+                                    <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'E' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">E</span>
+                                    <span class="flex-1 truncate">{{ $q->option_e }}</span>
+                                </div>
                             </div>
-                            <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'C' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
-                                <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'C' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">C</span>
-                                <span class="flex-1 truncate">{{ $q->option_c }}</span>
-                            </div>
-                            <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'D' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
-                                <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'D' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">D</span>
-                                <span class="flex-1 truncate">{{ $q->option_d }}</span>
-                            </div>
-                            <div class="p-3 border rounded-xl flex items-center space-x-2.5 {{ $q->correct_option === 'E' ? 'bg-emerald-50 border-emerald-500/50 text-emerald-800' : 'bg-slate-50 border-slate-100' }}">
-                                <span class="h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] {{ $q->correct_option === 'E' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500' }}">E</span>
-                                <span class="flex-1 truncate">{{ $q->option_e }}</span>
-                            </div>
-                        </div>
+                        @endif
 
                         <!-- Explanation info -->
                         @if ($q->explanation)
@@ -172,7 +182,14 @@
         </div>
         <form id="add-form" class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
             @csrf
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Tipe Soal</label>
+                    <select name="question_type" id="add-question_type" required onchange="toggleQuestionType('add')" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                        <option value="pg" selected>Pilihan Ganda (PG)</option>
+                        <option value="essai">Essay / Uraian</option>
+                    </select>
+                </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Tingkat Kesulitan</label>
                     <select name="difficulty" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white">
@@ -193,41 +210,47 @@
             </div>
 
             <!-- Options inputs -->
-            <div class="space-y-3">
+            <div id="add-options-container" class="space-y-3">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Pilihan Jawaban</label>
                 
                 <div class="flex items-center space-x-2">
                     <span class="bg-gray-100 border text-gray-600 font-bold h-7 w-7 rounded-full flex items-center justify-center text-xs">A</span>
-                    <input type="text" name="option_a" required placeholder="Jawaban A" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="add-option_a" name="option_a" required placeholder="Jawaban A" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="bg-gray-100 border text-gray-600 font-bold h-7 w-7 rounded-full flex items-center justify-center text-xs">B</span>
-                    <input type="text" name="option_b" required placeholder="Jawaban B" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="add-option_b" name="option_b" required placeholder="Jawaban B" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="bg-gray-100 border text-gray-600 font-bold h-7 w-7 rounded-full flex items-center justify-center text-xs">C</span>
-                    <input type="text" name="option_c" required placeholder="Jawaban C" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="add-option_c" name="option_c" required placeholder="Jawaban C" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="bg-gray-100 border text-gray-600 font-bold h-7 w-7 rounded-full flex items-center justify-center text-xs">D</span>
-                    <input type="text" name="option_d" required placeholder="Jawaban D" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="add-option_d" name="option_d" required placeholder="Jawaban D" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="bg-gray-100 border text-gray-600 font-bold h-7 w-7 rounded-full flex items-center justify-center text-xs">E</span>
-                    <input type="text" name="option_e" required placeholder="Jawaban E" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="add-option_e" name="option_e" required placeholder="Jawaban E" class="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div id="add-grading-grid" class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Kunci Jawaban</label>
-                    <select name="correct_option" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white font-bold text-emerald-800">
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                        <option value="E">E</option>
-                    </select>
+                    <div id="add-correct-pg-wrapper">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Kunci Jawaban</label>
+                        <select id="add-correct_option_pg" name="correct_option_pg" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white font-bold text-emerald-800">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                    </div>
+                    <div id="add-correct-essay-wrapper" class="hidden">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Jawaban Referensi (Kunci)</label>
+                        <textarea id="add-correct_option_essay" name="correct_option_essay" rows="3" placeholder="Masukkan poin/kata kunci jawaban referensi..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white"></textarea>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Pembahasan Soal (Opsional)</label>
@@ -255,7 +278,14 @@
             @method('PUT')
             <input type="hidden" id="edit-id">
             
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Tipe Soal</label>
+                    <select name="question_type" id="edit-question_type" required onchange="toggleQuestionType('edit')" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                        <option value="pg">Pilihan Ganda (PG)</option>
+                        <option value="essai">Essay / Uraian</option>
+                    </select>
+                </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Tingkat Kesulitan</label>
                     <select id="edit-difficulty" name="difficulty" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white">
@@ -276,7 +306,7 @@
             </div>
 
             <!-- Options inputs -->
-            <div class="space-y-3">
+            <div id="edit-options-container" class="space-y-3">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Pilihan Jawaban</label>
                 
                 <div class="flex items-center space-x-2">
@@ -301,16 +331,22 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div id="edit-grading-grid" class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Kunci Jawaban</label>
-                    <select id="edit-correct_option" name="correct_option" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white font-bold text-emerald-800">
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                        <option value="E">E</option>
-                    </select>
+                    <div id="edit-correct-pg-wrapper">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Kunci Jawaban</label>
+                        <select id="edit-correct_option_pg" name="correct_option_pg" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white font-bold text-emerald-800">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                    </div>
+                    <div id="edit-correct-essay-wrapper" class="hidden">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Jawaban Referensi (Kunci)</label>
+                        <textarea id="edit-correct_option_essay" name="correct_option_essay" rows="3" placeholder="Masukkan poin/kata kunci jawaban referensi..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white"></textarea>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Pembahasan Soal (Opsional)</label>
@@ -436,9 +472,14 @@
                 </div>
             </div>
 
-            <div>
+            <div id="preview-options-section">
                 <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5">Opsi & Kunci Jawaban</span>
                 <div class="space-y-2" id="preview-options"></div>
+            </div>
+
+            <div id="preview-essay-section" class="hidden">
+                <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Jawaban Referensi / Kunci</span>
+                <div id="preview-correct-essay" class="bg-amber-50 border border-amber-250 p-3 rounded-lg text-gray-800 font-semibold whitespace-pre-wrap"></div>
             </div>
 
             <div>
@@ -465,11 +506,55 @@
         });
     }
 
+    // Toggle options display based on Question Type selection
+    function toggleQuestionType(prefix) {
+        const typeSelect = document.getElementById(prefix + '-question_type');
+        const optionsContainer = document.getElementById(prefix + '-options-container');
+        const pgWrapper = document.getElementById(prefix + '-correct-pg-wrapper');
+        const essayWrapper = document.getElementById(prefix + '-correct-essay-wrapper');
+        const gradingGrid = document.getElementById(prefix + '-grading-grid');
+        
+        if (typeSelect.value === 'essai') {
+            optionsContainer.classList.add('hidden');
+            pgWrapper.classList.add('hidden');
+            essayWrapper.classList.remove('hidden');
+            if (gradingGrid) {
+                gradingGrid.classList.remove('grid-cols-2');
+                gradingGrid.classList.add('grid-cols-1');
+            }
+            
+            // disable required properties on input fields
+            document.querySelectorAll('#' + prefix + '-options-container input').forEach(input => {
+                input.removeAttribute('required');
+            });
+        } else {
+            optionsContainer.classList.remove('hidden');
+            pgWrapper.classList.remove('hidden');
+            essayWrapper.classList.add('hidden');
+            if (gradingGrid) {
+                gradingGrid.classList.remove('grid-cols-1');
+                gradingGrid.classList.add('grid-cols-2');
+            }
+            
+            // enable required properties back
+            document.querySelectorAll('#' + prefix + '-options-container input').forEach(input => {
+                if (input.id !== prefix + '-option_e') { // option_e is optional
+                    input.setAttribute('required', 'required');
+                }
+            });
+        }
+    }
+
     // Add Modal Functions
     function openAddModal() {
         const modal = document.getElementById('add-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        
+        // Reset and force PG defaults
+        document.getElementById('add-question_type').value = 'pg';
+        toggleQuestionType('add');
+
         setTimeout(() => {
             modal.querySelector('div').classList.remove('scale-95');
             modal.querySelector('div').classList.add('scale-100');
@@ -490,15 +575,28 @@
     // Edit Modal Functions
     function openEditModal(q) {
         document.getElementById('edit-id').value = q.id;
+        document.getElementById('edit-question_type').value = q.question_type || 'pg';
         document.getElementById('edit-difficulty').value = q.difficulty;
         document.getElementById('edit-category').value = q.category || '';
         document.getElementById('edit-question_text').value = q.question_text;
-        document.getElementById('edit-option_a').value = q.option_a;
-        document.getElementById('edit-option_b').value = q.option_b;
-        document.getElementById('edit-option_c').value = q.option_c;
-        document.getElementById('edit-option_d').value = q.option_d;
-        document.getElementById('edit-option_e').value = q.option_e;
-        document.getElementById('edit-correct_option').value = q.correct_option;
+        document.getElementById('edit-option_a').value = q.option_a || '';
+        document.getElementById('edit-option_b').value = q.option_b || '';
+        document.getElementById('edit-option_c').value = q.option_c || '';
+        document.getElementById('edit-option_d').value = q.option_d || '';
+        document.getElementById('edit-option_e').value = q.option_e || '';
+        
+        // Set correct options based on type
+        if (q.question_type === 'essai') {
+            document.getElementById('edit-correct_option_essay').value = q.correct_option || '';
+            document.getElementById('edit-correct_option_pg').value = 'A';
+        } else {
+            document.getElementById('edit-correct_option_pg').value = q.correct_option || 'A';
+            document.getElementById('edit-correct_option_essay').value = '';
+        }
+        
+        // Toggle view properties
+        toggleQuestionType('edit');
+
         document.getElementById('edit-explanation').value = q.explanation || '';
 
         const modal = document.getElementById('edit-modal');
@@ -558,6 +656,13 @@
     document.getElementById('add-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
+        
+        const type = formData.get('question_type');
+        if (type === 'essai') {
+            formData.set('correct_option', formData.get('correct_option_essay'));
+        } else {
+            formData.set('correct_option', formData.get('correct_option_pg'));
+        }
 
         axios.post("/dosen/bank-soal/{{ $bankSoal->id }}/questions", formData)
             .then(res => {
@@ -586,7 +691,17 @@
     document.getElementById('edit-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = document.getElementById('edit-id').value;
+        const type = document.getElementById('edit-question_type').value;
+        
+        let correctOption = '';
+        if (type === 'essai') {
+            correctOption = document.getElementById('edit-correct_option_essay').value;
+        } else {
+            correctOption = document.getElementById('edit-correct_option_pg').value;
+        }
+
         const formData = {
+            question_type: type,
             difficulty: document.getElementById('edit-difficulty').value,
             category: document.getElementById('edit-category').value,
             question_text: document.getElementById('edit-question_text').value,
@@ -595,7 +710,7 @@
             option_c: document.getElementById('edit-option_c').value,
             option_d: document.getElementById('edit-option_d').value,
             option_e: document.getElementById('edit-option_e').value,
-            correct_option: document.getElementById('edit-correct_option').value,
+            correct_option: correctOption,
             explanation: document.getElementById('edit-explanation').value,
         };
 
@@ -704,34 +819,43 @@
                     document.getElementById('preview-category').textContent = q.category || 'Tanpa Kategori';
                     document.getElementById('preview-explanation').textContent = q.explanation || 'Tidak ada pembahasan.';
                     
-                    const optionsContainer = document.getElementById('preview-options');
-                    optionsContainer.innerHTML = '';
-                    
-                    const opts = [
-                        { label: 'A', text: q.option_a },
-                        { label: 'B', text: q.option_b },
-                        { label: 'C', text: q.option_c },
-                        { label: 'D', text: q.option_d },
-                        { label: 'E', text: q.option_e }
-                    ];
-                    
-                    opts.forEach(opt => {
-                        const isCorrect = q.correct_option === opt.label;
-                        const card = document.createElement('div');
-                        card.className = `p-2.5 border rounded-lg flex items-center space-x-2 ${isCorrect ? 'bg-emerald-50 border-emerald-400 text-emerald-800' : 'bg-slate-50 border-slate-100'}`;
+                    if (q.question_type === 'essai') {
+                        document.getElementById('preview-options-section').classList.add('hidden');
+                        document.getElementById('preview-essay-section').classList.remove('hidden');
+                        document.getElementById('preview-correct-essay').textContent = q.correct_option || 'Tidak ada referensi jawaban.';
+                    } else {
+                        document.getElementById('preview-options-section').classList.remove('hidden');
+                        document.getElementById('preview-essay-section').classList.add('hidden');
                         
-                        const badge = document.createElement('span');
-                        badge.className = `h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] ${isCorrect ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500'}`;
-                        badge.textContent = opt.label;
+                        const optionsContainer = document.getElementById('preview-options');
+                        optionsContainer.innerHTML = '';
                         
-                        const text = document.createElement('span');
-                        text.className = 'flex-1 truncate font-semibold';
-                        text.textContent = opt.text;
+                        const opts = [
+                            { label: 'A', text: q.option_a },
+                            { label: 'B', text: q.option_b },
+                            { label: 'C', text: q.option_c },
+                            { label: 'D', text: q.option_d },
+                            { label: 'E', text: q.option_e }
+                        ];
                         
-                        card.appendChild(badge);
-                        card.appendChild(text);
-                        optionsContainer.appendChild(card);
-                    });
+                        opts.forEach(opt => {
+                            const isCorrect = q.correct_option === opt.label;
+                            const card = document.createElement('div');
+                            card.className = `p-2.5 border rounded-lg flex items-center space-x-2 ${isCorrect ? 'bg-emerald-50 border-emerald-400 text-emerald-800' : 'bg-slate-50 border-slate-100'}`;
+                            
+                            const badge = document.createElement('span');
+                            badge.className = `h-5 w-5 rounded-full flex items-center justify-center font-bold text-[10px] ${isCorrect ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-500'}`;
+                            badge.textContent = opt.label;
+                            
+                            const text = document.createElement('span');
+                            text.className = 'flex-1 truncate font-semibold';
+                            text.textContent = opt.text;
+                            
+                            card.appendChild(badge);
+                            card.appendChild(text);
+                            optionsContainer.appendChild(card);
+                        });
+                    }
 
                     const modal = document.getElementById('preview-modal');
                     modal.classList.remove('hidden');

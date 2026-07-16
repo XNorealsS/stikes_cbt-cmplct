@@ -38,4 +38,14 @@ class StudentExam extends Model
     {
         return $this->hasMany(StudentAnswer::class);
     }
+
+    public function hasUnfinishedEssayGrading()
+    {
+        return $this->studentAnswers()
+            ->whereHas('question', function ($query) {
+                $query->where('question_type', 'essai');
+            })
+            ->whereNull('is_correct')
+            ->exists();
+    }
 }

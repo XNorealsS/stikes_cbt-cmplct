@@ -174,6 +174,10 @@ Route::middleware(['auth'])->group(function () {
         // Rekap Nilai & Ekspor
         Route::get('/rekap-nilai', [DosenController::class, 'rekapNilai'])->name('grades.index');
         Route::get('/rekap-nilai/export/{exam_id}', [DosenController::class, 'exportGradesCsv'])->name('grades.export');
+        Route::get('/rekap-nilai/student-exams/{id}/essay-answers', [DosenController::class, 'getEssayAnswers'])->name('student-exams.essay-answers');
+        Route::post('/rekap-nilai/student-exams/{id}/grade-essay', [DosenController::class, 'gradeEssay'])->name('student-exams.grade-essay');
+        Route::get('/rekap-nilai/student-exams/{id}/koreksi', [DosenController::class, 'showEssayCorrection'])->name('student-exams.koreksi-essay');
+        Route::post('/rekap-nilai/student-exams/{id}/koreksi', [DosenController::class, 'storeEssayCorrection'])->name('student-exams.store-koreksi-essay');
 
         // Analisis Butir Soal
         Route::get('/analisis-soal', [AnalisisController::class, 'dosenIndex'])->name('analisis.index');

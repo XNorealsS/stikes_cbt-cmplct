@@ -18,9 +18,9 @@
         </div>
     </div>
 
-    <!-- Select Exam Form -->
+    <!-- Select Exam & Filter Form -->
     <div class="bg-white p-4 rounded-xl border border-gray-250 shadow-sm">
-        <form method="GET" action="{{ route('admin.analisis.index') }}" class="flex flex-col sm:flex-row items-end gap-4">
+        <form method="GET" action="{{ route('admin.analisis.index') }}" class="flex flex-col md:flex-row items-end gap-4">
             <div class="flex-grow w-full">
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Pilih Sesi Ujian</label>
                 <select name="exam_id" onchange="this.form.submit()" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white font-semibold text-gray-700">
@@ -32,13 +32,23 @@
                     @endforeach
                 </select>
             </div>
+            
             @if ($selectedExam)
-            <div class="flex space-x-2 w-full sm:w-auto">
-                <button type="button" onclick="runAnalysis({{ $selectedExam->id }})" class="bg-primary hover:bg-emerald-850 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider transition shadow-sm w-full sm:w-auto cursor-pointer flex items-center justify-center space-x-1.5">
+            <div class="w-full md:w-48">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filter Tipe Soal</label>
+                <select id="filter-tipe-soal" onchange="filterQuestionsByType()" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white font-semibold text-gray-700">
+                    <option value="all" selected>Semua Tipe</option>
+                    <option value="pg">Pilihan Ganda (PG)</option>
+                    <option value="essai">Essay (Essai)</option>
+                </select>
+            </div>
+            
+            <div class="flex space-x-2 w-full md:w-auto">
+                <button type="button" onclick="runAnalysis({{ $selectedExam->id }})" class="bg-primary hover:bg-emerald-850 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider transition shadow-sm w-full md:w-auto cursor-pointer flex items-center justify-center space-x-1.5">
                     <i class="fa-solid fa-arrows-spin"></i>
                     <span>Jalankan Analisis</span>
                 </button>
-                <a href="{{ route('admin.analisis.export', $selectedExam->id) }}" class="bg-secondary bg-green-700 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider transition shadow-sm text-center w-full sm:w-auto cursor-pointer flex items-center justify-center space-x-1.5">
+                <a href="{{ route('admin.analisis.export', $selectedExam->id) }}" class="bg-secondary bg-green-700 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider transition shadow-sm text-center w-full md:w-auto cursor-pointer flex items-center justify-center space-x-1.5">
                     <i class="fa-solid fa-file-excel"></i>
                     <span>Export Excel</span>
                 </a>
@@ -63,7 +73,7 @@
         <div class="bg-white p-5 rounded-xl border border-gray-250 shadow-sm flex flex-col justify-between">
             <div>
                 <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Jumlah Soal</span>
-                <span class="text-2xl font-black text-gray-800 leading-tight block">{{ count($analyses) }} Soal</span>
+                <span id="displayed-question-count" class="text-2xl font-black text-gray-800 leading-tight block">{{ count($analyses) }} Soal</span>
             </div>
             <span class="block text-[10px] text-gray-400 font-semibold mt-2 border-t pt-2">Total butir soal yang diujikan</span>
         </div>
@@ -86,6 +96,7 @@
                     <tr class="bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">
                         <th class="py-3 px-4 w-12 text-center border-r border-gray-200">No</th>
                         <th class="py-3 px-4 border-r border-gray-200">Butir Soal</th>
+                        <th class="py-3 px-4 text-center border-r border-gray-200">Tipe</th>
                         <th class="py-3 px-4 text-center border-r border-gray-200">Tingkat Kesukaran (TK)</th>
                         <th class="py-3 px-4 text-center border-r border-gray-200">Daya Beda (DB)</th>
                         <th class="py-3 px-4 text-center border-r border-gray-200">Benar / Salah</th>
@@ -94,10 +105,15 @@
                 </thead>
                 <tbody class="text-xs divide-y divide-gray-200 text-gray-700">
                     @forelse ($analyses as $index => $a)
-                    <tr class="hover:bg-slate-50 transition">
+                    <tr class="analysis-row hover:bg-slate-50 transition" data-type="{{ $a['question_type'] ?? 'pg' }}">
                         <td class="py-3 px-4 text-center font-bold text-gray-400 border-r border-gray-200">{{ $index + 1 }}</td>
                         <td class="py-3 px-4 border-r border-gray-200 font-semibold">
                             <div class="line-clamp-2">{!! strip_tags($a['question_text']) !!}</div>
+                        </td>
+                        <td class="py-3 px-4 border-r border-gray-200 text-center font-bold">
+                            <span class="inline-block text-[9px] px-2 py-0.5 rounded font-bold uppercase {{ ($a['question_type'] ?? 'pg') === 'essai' ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }}">
+                                {{ ($a['question_type'] ?? 'pg') === 'essai' ? 'Essay' : 'PG' }}
+                            </span>
                         </td>
                         <td class="py-3 px-4 text-center border-r border-gray-200 space-y-1">
                             <span class="block font-mono font-bold text-gray-800">{{ number_format($a['tingkat_kesukaran'], 2) }}</span>
@@ -116,18 +132,22 @@
                             <span class="text-red-700 font-bold">{{ $a['jawaban_salah'] }}S</span>
                         </td>
                         <td class="py-3 px-4 text-center font-mono">
-                            <div class="flex flex-wrap justify-center gap-1">
-                                @foreach ($a['distribusi'] as $opt => $count)
-                                <span class="bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded text-[10px] font-bold text-gray-650">
-                                    <strong>{{ $opt }}</strong>:{{ $count }}
-                                </span>
-                                @endforeach
-                            </div>
+                            @if (($a['question_type'] ?? 'pg') === 'essai')
+                                <span class="text-gray-400 italic text-[10px]">Essay (Tidak Ada Opsi)</span>
+                            @else
+                                <div class="flex flex-wrap justify-center gap-1">
+                                    @foreach ($a['distribusi'] as $opt => $count)
+                                    <span class="bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded text-[10px] font-bold text-gray-650">
+                                        <strong>{{ $opt }}</strong>:{{ $count }}
+                                    </span>
+                                    @endforeach
+                                </div>
+                            @endif
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-gray-400 font-semibold">Silakan jalankan analisis terlebih dahulu.</td>
+                        <td colspan="7" class="py-8 text-center text-gray-400 font-semibold">Silakan jalankan analisis terlebih dahulu.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -140,6 +160,27 @@
 
 @section('scripts')
 <script>
+    function filterQuestionsByType() {
+        const filterVal = document.getElementById('filter-tipe-soal').value;
+        const rows = document.querySelectorAll('.analysis-row');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const rowType = row.getAttribute('data-type');
+            if (filterVal === 'all' || rowType === filterVal) {
+                row.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+        
+        const countSpan = document.getElementById('displayed-question-count');
+        if (countSpan) {
+            countSpan.textContent = visibleCount + ' Soal';
+        }
+    }
+
     function runAnalysis(examId) {
         Swal.fire({
             title: 'Jalankan Analisis?',

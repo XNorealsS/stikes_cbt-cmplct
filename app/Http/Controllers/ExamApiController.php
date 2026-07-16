@@ -89,8 +89,12 @@ class ExamApiController extends Controller
                     'status' => 'progress',
                 ]);
 
-                // Fetch questions for this course
-                $questions = Question::where('course_id', $exam->course_id)->get();
+                // Fetch questions for this exam's bank soal if set, otherwise fallback to course_id
+                if ($exam->bank_soal_id) {
+                    $questions = Question::where('bank_soal_id', $exam->bank_soal_id)->get();
+                } else {
+                    $questions = Question::where('course_id', $exam->course_id)->get();
+                }
 
                 // If the exam requires random order, shuffle questions, otherwise order by ID
                 if ($exam->is_random) {
@@ -311,7 +315,16 @@ class ExamApiController extends Controller
                     }
                 } else {
                     // Essai or Menjodohkan (graded manually or default to false)
-                    $ans->is_correct = false;
+                    if ($q->question_type === 'essai') {
+                        // Keep it nullable unless it has already been graded
+                        if ($ans->is_correct === null) {
+                            $ans->is_correct = null;
+                        } else if ($ans->is_correct) {
+                            $correctCount++;
+                        }
+                    } else {
+                        $ans->is_correct = false;
+                    }
                 }
                 $ans->save();
             }

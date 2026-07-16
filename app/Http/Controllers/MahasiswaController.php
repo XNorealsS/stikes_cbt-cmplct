@@ -270,7 +270,16 @@ class MahasiswaController extends Controller
                         $ans->is_correct = false;
                     }
                 } else {
-                    $ans->is_correct = false;
+                    // Essai or Menjodohkan (graded manually or default to false)
+                    if ($q->question_type === 'essai') {
+                        if ($ans->is_correct === null) {
+                            $ans->is_correct = null;
+                        } else if ($ans->is_correct) {
+                            $correctCount++;
+                        }
+                    } else {
+                        $ans->is_correct = false;
+                    }
                 }
                 $ans->save();
             }

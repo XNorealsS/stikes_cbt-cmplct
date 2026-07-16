@@ -162,24 +162,47 @@ class BankSoalController extends Controller
     {
         $bankSoal = $this->getBankSoalForUser($bank_soal_id);
 
-        $data = $request->validate([
+        $isEssay = $request->input('question_type') === 'essai';
+
+        $rules = [
             'question_type' => 'nullable|string|in:pg,pg_kompleks,essai,isian,menjodohkan,benar_salah',
             'category' => 'nullable|string|max:255',
             'difficulty' => 'required|in:mudah,sedang,sulit',
             'question_text' => 'required|string',
-            'option_a' => 'required|string',
-            'option_b' => 'required|string',
-            'option_c' => 'required|string',
-            'option_d' => 'required|string',
-            'option_e' => 'required|string',
-            'correct_option' => 'required|in:A,B,C,D,E',
             'bobot' => 'nullable|numeric|min:0',
             'explanation' => 'nullable|string',
-        ]);
+        ];
+
+        if ($isEssay) {
+            $rules['correct_option'] = 'nullable|string';
+            $rules['option_a'] = 'nullable|string';
+            $rules['option_b'] = 'nullable|string';
+            $rules['option_c'] = 'nullable|string';
+            $rules['option_d'] = 'nullable|string';
+            $rules['option_e'] = 'nullable|string';
+        } else {
+            $rules['option_a'] = 'required|string';
+            $rules['option_b'] = 'required|string';
+            $rules['option_c'] = 'required|string';
+            $rules['option_d'] = 'required|string';
+            $rules['option_e'] = 'required|string';
+            $rules['correct_option'] = 'required|in:A,B,C,D,E';
+        }
+
+        $data = $request->validate($rules);
 
         $data['bank_soal_id'] = $bankSoal->id;
         $data['course_id'] = $bankSoal->course_id;
         $data['question_type'] = $data['question_type'] ?? 'pg';
+
+        if ($isEssay) {
+            $data['option_a'] = $data['option_a'] ?? '-';
+            $data['option_b'] = $data['option_b'] ?? '-';
+            $data['option_c'] = $data['option_c'] ?? '-';
+            $data['option_d'] = $data['option_d'] ?? '-';
+            $data['option_e'] = $data['option_e'] ?? '-';
+            $data['correct_option'] = $data['correct_option'] ?? '';
+        }
 
         $question = Question::create($data);
 
@@ -196,22 +219,46 @@ class BankSoalController extends Controller
         $question = Question::findOrFail($id);
         $bankSoal = $this->getBankSoalForUser($question->bank_soal_id);
 
-        $data = $request->validate([
+        $isEssay = $request->input('question_type') === 'essai';
+
+        $rules = [
             'question_type' => 'nullable|string|in:pg,pg_kompleks,essai,isian,menjodohkan,benar_salah',
             'category' => 'nullable|string|max:255',
             'difficulty' => 'required|in:mudah,sedang,sulit',
             'question_text' => 'required|string',
-            'option_a' => 'required|string',
-            'option_b' => 'required|string',
-            'option_c' => 'required|string',
-            'option_d' => 'required|string',
-            'option_e' => 'required|string',
-            'correct_option' => 'required|in:A,B,C,D,E',
             'bobot' => 'nullable|numeric|min:0',
             'explanation' => 'nullable|string',
-        ]);
+        ];
+
+        if ($isEssay) {
+            $rules['correct_option'] = 'nullable|string';
+            $rules['option_a'] = 'nullable|string';
+            $rules['option_b'] = 'nullable|string';
+            $rules['option_c'] = 'nullable|string';
+            $rules['option_d'] = 'nullable|string';
+            $rules['option_e'] = 'nullable|string';
+        } else {
+            $rules['option_a'] = 'required|string';
+            $rules['option_b'] = 'required|string';
+            $rules['option_c'] = 'required|string';
+            $rules['option_d'] = 'required|string';
+            $rules['option_e'] = 'required|string';
+            $rules['correct_option'] = 'required|in:A,B,C,D,E';
+        }
+
+        $data = $request->validate($rules);
 
         $data['question_type'] = $data['question_type'] ?? 'pg';
+
+        if ($isEssay) {
+            $data['option_a'] = $data['option_a'] ?? '-';
+            $data['option_b'] = $data['option_b'] ?? '-';
+            $data['option_c'] = $data['option_c'] ?? '-';
+            $data['option_d'] = $data['option_d'] ?? '-';
+            $data['option_e'] = $data['option_e'] ?? '-';
+            $data['correct_option'] = $data['correct_option'] ?? '';
+        }
+
         $question->update($data);
 
         ActivityLog::log('Edit Soal', "Mengubah soal ID: {$question->id} di bank soal ID: {$bankSoal->id}.");
@@ -276,12 +323,13 @@ class BankSoalController extends Controller
         $headers = [
             'Pertanyaan / Teks Soal',
             'Tingkat Kesulitan (mudah/sedang/sulit)',
+            'Tipe Soal (pg/essai)',
             'Pilihan A',
             'Pilihan B',
             'Pilihan C',
             'Pilihan D',
             'Pilihan E (Opsional)',
-            'Kunci Jawaban (A/B/C/D/E)',
+            'Kunci Jawaban (Untuk PG: A/B/C/D/E, Untuk Essay: Tulis Kunci/Jawaban Referensi)',
             'Pembahasan / Catatan (Opsional)'
         ];
 
@@ -289,7 +337,7 @@ class BankSoalController extends Controller
         $sheet->fromArray([$headers], null, 'A1');
 
         // Header Styling (STIKesMu Dark Green)
-        $headerRange = 'A1:I1';
+        $headerRange = 'A1:J1';
         $sheet->getStyle($headerRange)->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -318,6 +366,7 @@ class BankSoalController extends Controller
             [
                 'Siapakah pelopor utama keperawatan modern yang dikenal dengan julukan The Lady with the Lamp?',
                 'mudah',
+                'pg',
                 'Florence Nightingale',
                 'Clara Barton',
                 'Dorothea Dix',
@@ -329,6 +378,7 @@ class BankSoalController extends Controller
             [
                 'Berapakah batas rentang normal tekanan darah sistolik pada orang dewasa dalam kondisi istirahat?',
                 'sedang',
+                'pg',
                 '90 - 120 mmHg',
                 '120 - 140 mmHg',
                 '140 - 160 mmHg',
@@ -338,15 +388,16 @@ class BankSoalController extends Controller
                 'Sistolik normal dewasa adalah kurang dari 120 mmHg (rentang 90-120 mmHg).'
             ],
             [
-                'Pemeriksaan spesifik yang paling tepat untuk konfirmasi diagnosis pasti malaria adalah:',
-                'sulit',
-                'Uji Kromatografi Cepat (RDT)',
-                'Pemeriksaan Mikroskopis Tetes Tebal & Apusan Darah',
-                'Hitung Jenis Leukosit (Diff Count)',
-                'Pemeriksaan Laju Endap Darah (LED)',
-                'Tes Serologi IgG/IgM',
-                'B',
-                'Baku emas (gold standard) diagnosis malaria adalah ditemukannya parasit plasmodium pada apusan darah.'
+                'Jelaskan perbedaan utama antara pembuluh darah arteri dan vena!',
+                'sedang',
+                'essai',
+                '',
+                '',
+                '',
+                '',
+                '',
+                'Arteri membawa darah kaya oksigen keluar dari jantung, dinding tebal & elastis. Vena membawa darah kaya karbon dioksida menuju jantung, dinding tipis & memiliki katup.',
+                'Perbedaan mencakup fungsi, struktur dinding pembuluh, serta kandungan gas dalam darah.'
             ],
         ];
 
@@ -354,7 +405,7 @@ class BankSoalController extends Controller
         $sheet->fromArray($samples, null, 'A2');
 
         // Auto Column Widths
-        foreach (range('A', 'I') as $col) {
+        foreach (range('A', 'J') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 

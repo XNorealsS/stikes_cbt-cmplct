@@ -29,14 +29,16 @@ class QuestionImportService
                 return ['success' => false, 'count' => 0, 'errors' => ['File Excel kosong atau hanya berisi header.']];
             }
 
+            // Detect new format with "Tipe Soal" column (index 2) by checking if the header row has at least 10 elements
+            $isNewFormat = (count($rows[0]) >= 10);
+
             DB::beginTransaction();
 
             for ($i = 1; $i < count($rows); $i++) {
                 $row = $rows[$i];
 
-                // Check if the essential columns are present (question text, options, correct answer)
-                if (empty($row[0]) || empty($row[2]) || empty($row[3]) || empty($row[4]) || empty($row[5])) {
-                    // Skip empty rows
+                // Skip if question text is empty
+                if (empty($row[0])) {
                     continue;
                 }
 
@@ -46,24 +48,61 @@ class QuestionImportService
                     $difficulty = 'sedang';
                 }
 
-                $optionA = trim($row[2]);
-                $optionB = trim($row[3]);
-                $optionC = trim($row[4]);
-                $optionD = trim($row[5]);
-                $optionE = trim($row[6] ?? '-');
-                
-                $correctOption = strtoupper(trim($row[7] ?? 'A'));
-                if (!in_array($correctOption, ['A', 'B', 'C', 'D', 'E'])) {
-                    $correctOption = 'A';
-                }
+                if ($isNewFormat) {
+                    $type = strtolower(trim($row[2] ?? 'pg'));
+                    if (!in_array($type, ['pg', 'essai'])) {
+                        $type = 'pg';
+                    }
 
-                $explanation = isset($row[8]) ? trim($row[8]) : null;
+                    if ($type === 'essai') {
+                        $optionA = '-';
+                        $optionB = '-';
+                        $optionC = '-';
+                        $optionD = '-';
+                        $optionE = '-';
+                        $correctOption = isset($row[8]) ? trim($row[8]) : '';
+                        $explanation = isset($row[9]) ? trim($row[9]) : null;
+                    } else {
+                        // Skip PG rows that don't have option A-D filled
+                        if (empty($row[3]) || empty($row[4]) || empty($row[5]) || empty($row[6])) {
+                            continue;
+                        }
+                        $optionA = trim($row[3]);
+                        $optionB = trim($row[4]);
+                        $optionC = trim($row[5]);
+                        $optionD = trim($row[6]);
+                        $optionE = trim($row[7] ?? '-');
+                        $correctOption = strtoupper(trim($row[8] ?? 'A'));
+                        if (!in_array($correctOption, ['A', 'B', 'C', 'D', 'E'])) {
+                            $correctOption = 'A';
+                        }
+                        $explanation = isset($row[9]) ? trim($row[9]) : null;
+                    }
+                } else {
+                    // Old format: always PG (9 columns)
+                    // Skip PG rows that don't have option A-D filled
+                    if (empty($row[2]) || empty($row[3]) || empty($row[4]) || empty($row[5])) {
+                        continue;
+                    }
+                    $type = 'pg';
+                    $optionA = trim($row[2]);
+                    $optionB = trim($row[3]);
+                    $optionC = trim($row[4]);
+                    $optionD = trim($row[5]);
+                    $optionE = trim($row[6] ?? '-');
+                    $correctOption = strtoupper(trim($row[7] ?? 'A'));
+                    if (!in_array($correctOption, ['A', 'B', 'C', 'D', 'E'])) {
+                        $correctOption = 'A';
+                    }
+                    $explanation = isset($row[8]) ? trim($row[8]) : null;
+                }
 
                 Question::create([
                     'course_id' => $courseId,
                     'bank_soal_id' => $bankSoalId,
                     'category' => $category ?? 'Excel Import',
                     'difficulty' => $difficulty,
+                    'question_type' => $type,
                     'question_text' => $questionText,
                     'option_a' => $optionA,
                     'option_b' => $optionB,
