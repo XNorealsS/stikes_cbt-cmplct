@@ -18,6 +18,7 @@ use App\Models\Tugas;
 use App\Models\TugasSubmission;
 use App\Models\StudentExam;
 use App\Models\StudentAnswer;
+use App\Models\Pengumuman;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,7 @@ class DatabaseSeeder extends Seeder
         TugasSubmission::truncate();
         StudentExam::truncate();
         StudentAnswer::truncate();
+        Pengumuman::truncate();
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
         // 2. Seed Prodi
@@ -282,7 +284,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // 13. Seed 1 Active Exam
-        Exam::create([
+        $activeExam = Exam::create([
             'course_id' => $course->id,
             'bank_soal_id' => $bankSoal->id,
             'dosen_id' => $dosen->id,
@@ -452,5 +454,112 @@ class DatabaseSeeder extends Seeder
                 'question_order' => $order++,
             ]);
         }
+
+        // 17. Seed Dummy StudentExams for the Active Exam (to show rekapitulasi nilai)
+        $dummyStudentsData = [
+            ['name' => 'Ahmad Fauzi', 'nim' => '250101002', 'score' => 90.00],
+            ['name' => 'Siti Aminah', 'nim' => '250101003', 'score' => 80.00],
+            ['name' => 'Rian Hidayat', 'nim' => '250101004', 'score' => 70.00],
+            ['name' => 'Dewi Lestari', 'nim' => '250101005', 'score' => 100.00],
+            ['name' => 'Bambang Pamungkas', 'nim' => '250101006', 'score' => 60.00],
+            ['name' => 'Fitriani', 'nim' => '250101007', 'score' => 80.00],
+            ['name' => 'Hendra Wijaya', 'nim' => '250101008', 'score' => 50.00],
+            ['name' => 'Indah Permatasari', 'nim' => '250101009', 'score' => 90.00],
+            ['name' => 'Joko Susilo', 'nim' => '250101010', 'score' => 70.00],
+            ['name' => 'Kartika Sari', 'nim' => '250101011', 'score' => 90.00],
+            ['name' => 'Lukman Hakim', 'nim' => '250101012', 'score' => 60.00],
+            ['name' => 'Megawati', 'nim' => '250101013', 'score' => 80.00],
+            ['name' => 'Novianti', 'nim' => '250101014', 'score' => 80.00],
+            ['name' => 'Oki Setiana', 'nim' => '250101015', 'score' => 50.00],
+            ['name' => 'Putra Pratama', 'nim' => '250101016', 'score' => 90.00],
+        ];
+
+        // Fetch active questions for the active exam
+        $activeQuestions = Question::where('bank_soal_id', $bankSoal->id)->get();
+
+        foreach ($dummyStudentsData as $studentData) {
+            $studentUser = User::create([
+                'name' => $studentData['name'],
+                'username' => $studentData['nim'],
+                'email' => strtolower(str_replace(' ', '', $studentData['name'])) . '@stikes.ac.id',
+                'role' => 'mahasiswa',
+                'nim' => $studentData['nim'],
+                'class_id' => $class->id,
+                'prodi_id' => $prodi1->id,
+                'angkatan' => '2025',
+                'password' => Hash::make($studentData['nim']),
+            ]);
+
+            $studentExamRecord = StudentExam::create([
+                'user_id' => $studentUser->id,
+                'exam_id' => $activeExam->id,
+                'started_at' => now()->subMinutes(rand(45, 60)),
+                'finished_at' => now()->subMinutes(rand(5, 15)),
+                'score' => $studentData['score'],
+                'status' => 'finished',
+            ]);
+
+            // Calculate correct answers count based on score (10 questions, each 10 points)
+            $correctCount = (int)round($studentData['score'] / 10);
+            
+            // Determine which specific question IDs will be correct (shuffled to make it natural)
+            $shuffledQuestions = $activeQuestions->shuffle();
+            $correctQuestions = $shuffledQuestions->take($correctCount)->pluck('id')->toArray();
+            
+            $qOrder = 1;
+            foreach ($activeQuestions as $q) {
+                $isCorrect = in_array($q->id, $correctQuestions);
+                
+                if ($isCorrect) {
+                    $selectedOption = $q->correct_option;
+                } else {
+                    $options = ['A', 'B', 'C', 'D', 'E'];
+                    $incorrectOptions = array_filter($options, fn($opt) => $opt !== $q->correct_option);
+                    $selectedOption = $incorrectOptions[array_rand($incorrectOptions)];
+                }
+
+                StudentAnswer::create([
+                    'student_exam_id' => $studentExamRecord->id,
+                    'question_id' => $q->id,
+                    'selected_option' => $selectedOption,
+                    'is_correct' => $isCorrect,
+                    'question_order' => $qOrder++,
+                ]);
+            }
+        }
+
+        // 18. Seed Dummy Kampus Announcements (Pengumuman)
+        // Find admin user to associate as publisher
+        $adminUser = User::where('role', 'admin')->first();
+
+        Pengumuman::create([
+            'user_id' => $adminUser->id,
+            'judul' => 'Sosialisasi Penggunaan Portal CBTMu Terintegrasi',
+            'isi' => "Diberitahukan kepada seluruh Civitas Akademika STIKesMu Lhokseumawe, kami mengundang Bapak/Ibu Dosen serta rekan-rekan Mahasiswa sekalian untuk mengikuti sosialisasi sistem ujian baru (CBTMu) yang akan dilaksanakan secara daring melalui aplikasi Zoom Meeting pada hari Jumat ini pukul 14:00 WIB. Tautan pertemuan akan dikirimkan melalui grup WhatsApp koordinasi prodi. Kehadiran sangat diharapkan guna kelancaran pelaksanaan ujian ke depan.",
+            'target' => 'semua',
+            'tanggal_aktif' => now(),
+            'tanggal_expired' => now()->addDays(30),
+            'is_aktif' => true,
+        ]);
+
+        Pengumuman::create([
+            'user_id' => $adminUser->id,
+            'judul' => 'Jadwal Ujian Tengah Semester (UTS) Semester Ganjil TA 2025/2026',
+            'isi' => "Diberitahukan kepada seluruh mahasiswa STIKesMu Lhokseumawe bahwa pelaksanaan Ujian Tengah Semester (UTS) Ganjil akan dimulai secara serentak melalui portal CBTMu pada tanggal 20 Juli 2026. Persiapkan perangkat gawai/laptop Anda, pastikan koneksi internet stabil, dan harap menyelesaikan administrasi keuangan untuk mengaktifkan kartu ujian Anda paling lambat H-2 ujian.",
+            'target' => 'mahasiswa',
+            'tanggal_aktif' => now(),
+            'tanggal_expired' => now()->addDays(15),
+            'is_aktif' => true,
+        ]);
+
+        Pengumuman::create([
+            'user_id' => $adminUser->id,
+            'judul' => 'Panduan Pembuatan Bank Soal Ujian Bagi Dosen Pengampu',
+            'isi' => "Yth. Bapak/Ibu Dosen STIKesMu Lhokseumawe. Harap mengunggah butir soal ujian menggunakan template file Excel yang disediakan pada menu Kelola Soal selambat-lambatnya H-3 sebelum jadwal sesi ujian aktif dimulai. Hal ini diperlukan demi kelancaran proses validasi dan sinkronisasi data oleh tim IT administrator CBT.",
+            'target' => 'dosen',
+            'tanggal_aktif' => now(),
+            'tanggal_expired' => now()->addDays(60),
+            'is_aktif' => true,
+        ]);
     }
 }

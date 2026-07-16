@@ -149,6 +149,10 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/bank-soal/{id}', [BankSoalController::class, 'update'])->name('bank-soal.update');
         Route::delete('/bank-soal/{id}', [BankSoalController::class, 'destroy'])->name('bank-soal.destroy');
         Route::post('/bank-soal/{id}/toggle-aktif', [BankSoalController::class, 'toggleActive'])->name('bank-soal.toggle-aktif');
+    });
+
+    // Routes accessible by both Admin and Dosen (for managing questions within Bank Soal)
+    Route::middleware(['role:admin,dosen'])->prefix('dosen')->name('dosen.')->group(function () {
         Route::get('/bank-soal/{id}', [BankSoalController::class, 'show'])->name('bank-soal.show');
 
         // Questions within Bank Soal (AJAX & Imports)

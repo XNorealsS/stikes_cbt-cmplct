@@ -1,13 +1,13 @@
-@extends('layouts.dosen')
+@extends(auth()->user()->role === 'admin' ? 'layouts.admin' : 'layouts.dosen')
 
 @section('title', 'Detail Bank Soal - E-Learning STIKesMu')
 
-@section('dosen-content')
+@section(auth()->user()->role === 'admin' ? 'admin-content' : 'dosen-content')
 <div class="space-y-6">
     <!-- Page Header -->
     <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-250 shadow-sm">
         <h1 class="text-xl font-black text-primary tracking-tight">Detail Bank Soal</h1>
-        <a href="{{ route('dosen.questions.index') }}" class="bg-red-600 hover:bg-red-750 text-white font-bold py-1.5 px-4 rounded-lg text-xs uppercase tracking-wider transition flex items-center space-x-1.5 shadow-sm">
+        <a href="{{ auth()->user()->role === 'admin' ? route('admin.bank-soal.index') : route('dosen.questions.index') }}" class="bg-red-600 hover:bg-red-750 text-white font-bold py-1.5 px-4 rounded-lg text-xs uppercase tracking-wider transition flex items-center space-x-1.5 shadow-sm">
             <i class="fa-solid fa-arrow-left"></i>
             <span>Kembali</span>
         </a>

@@ -254,7 +254,7 @@
 
             <div class="pt-4 flex justify-end space-x-3 border-t border-gray-100">
                 <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-secondary hover:bg-green-700 text-white rounded-lg text-sm font-semibold transition shadow-sm">Simpan</button>
+                <button type="submit" class="px-4 py-2 bg-secondary bg-green-700 text-white rounded-lg text-sm font-semibold transition shadow-sm">Simpan</button>
             </div>
         </form>
     </div>
@@ -270,14 +270,14 @@
             </div>
             <button onclick="closeProgressModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
-        <div class="p-6 max-h-96 overflow-y-auto">
+        <div class="px-6 pb-6 max-h-96 overflow-y-auto pt-0">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-gray-50 text-slate-500 font-bold uppercase tracking-wider border-b border-gray-150">
-                        <th class="py-2.5 px-4">Nama Mahasiswa</th>
-                        <th class="py-2.5 px-4">NIM</th>
-                        <th class="py-2.5 px-4 text-center">Status</th>
-                        <th class="py-2.5 px-4 text-right">Waktu Lihat</th>
+                    <tr class="uppercase tracking-wider border-b border-gray-150">
+                        <th class="py-3 px-4 sticky top-0 bg-green-700 text-white font-bold z-10">Nama Mahasiswa</th>
+                        <th class="py-3 px-4 sticky top-0 bg-green-700 text-white font-bold z-10">NIM</th>
+                        <th class="py-3 px-4 text-center sticky top-0 bg-green-700 text-white font-bold z-10">Status</th>
+                        <th class="py-3 px-4 text-right sticky top-0 bg-green-700 text-white font-bold z-10">Waktu Lihat</th>
                     </tr>
                 </thead>
                 <tbody id="progress-table-body" class="divide-y divide-gray-100">

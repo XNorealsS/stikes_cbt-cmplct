@@ -37,8 +37,8 @@
             <div class="md:col-span-2">
                 <label for="search" class="block text-xs font-bold text-slate-700 uppercase mb-1">Cari Nama Bank Soal</label>
                 <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3 top-2.5 text-xs"></i>
-                    <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Ketik nama bank soal..." class="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-none text-xs focus:outline-none focus:border-green-600 bg-white text-slate-800">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs pointer-events-none"></i>
+                    <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Ketik nama bank soal..." class="w-full pr-4 py-2 border border-slate-300 rounded-none text-xs focus:outline-none focus:border-green-600 bg-white text-slate-800" style="padding-left: 2.25rem;">
                 </div>
             </div>
         </form>

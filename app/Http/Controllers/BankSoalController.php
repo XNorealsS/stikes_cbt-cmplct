@@ -21,6 +21,18 @@ class BankSoalController extends Controller
     }
 
     /**
+     * Helper to retrieve bank soal for current user, allowing admins to bypass dosen_id constraint.
+     */
+    private function getBankSoalForUser($id)
+    {
+        $query = BankSoal::with('course');
+        if (auth()->user()->role !== 'admin') {
+            $query->where('dosen_id', auth()->id());
+        }
+        return $query->findOrFail($id);
+    }
+
+    /**
      * Display a listing of the bank soals.
      */
     public function index(Request $request)
@@ -123,7 +135,7 @@ class BankSoalController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $bankSoal = BankSoal::with('course')->where('dosen_id', auth()->id())->findOrFail($id);
+        $bankSoal = $this->getBankSoalForUser($id);
         
         $difficulty = $request->query('difficulty', '');
         $questionType = $request->query('question_type', '');
@@ -148,7 +160,7 @@ class BankSoalController extends Controller
      */
     public function questionStore(Request $request, $bank_soal_id)
     {
-        $bankSoal = BankSoal::where('dosen_id', auth()->id())->findOrFail($bank_soal_id);
+        $bankSoal = $this->getBankSoalForUser($bank_soal_id);
 
         $data = $request->validate([
             'question_type' => 'nullable|string|in:pg,pg_kompleks,essai,isian,menjodohkan,benar_salah',
@@ -182,7 +194,7 @@ class BankSoalController extends Controller
     public function questionUpdate(Request $request, $id)
     {
         $question = Question::findOrFail($id);
-        $bankSoal = BankSoal::where('dosen_id', auth()->id())->findOrFail($question->bank_soal_id);
+        $bankSoal = $this->getBankSoalForUser($question->bank_soal_id);
 
         $data = $request->validate([
             'question_type' => 'nullable|string|in:pg,pg_kompleks,essai,isian,menjodohkan,benar_salah',
@@ -213,7 +225,7 @@ class BankSoalController extends Controller
     public function questionDestroy($id)
     {
         $question = Question::findOrFail($id);
-        $bankSoal = BankSoal::where('dosen_id', auth()->id())->findOrFail($question->bank_soal_id);
+        $bankSoal = $this->getBankSoalForUser($question->bank_soal_id);
         $question->delete();
 
         ActivityLog::log('Hapus Soal', "Menghapus soal ID: {$id} dari bank soal ID: {$bankSoal->id}.");
@@ -226,7 +238,7 @@ class BankSoalController extends Controller
      */
     public function questionImport(Request $request, $bank_soal_id)
     {
-        $bankSoal = BankSoal::where('dosen_id', auth()->id())->findOrFail($bank_soal_id);
+        $bankSoal = $this->getBankSoalForUser($bank_soal_id);
 
         $request->validate([
             'import_file' => 'required|file|mimes:xlsx,xls,csv',
@@ -375,7 +387,7 @@ class BankSoalController extends Controller
     public function questionPreview($id)
     {
         $question = Question::with('matches')->findOrFail($id);
-        $bankSoal = BankSoal::where('dosen_id', auth()->id())->findOrFail($question->bank_soal_id);
+        $bankSoal = $this->getBankSoalForUser($question->bank_soal_id);
         return response()->json(['success' => true, 'question' => $question]);
     }
 }

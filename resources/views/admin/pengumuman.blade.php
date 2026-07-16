@@ -22,43 +22,55 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse ($pengumumans as $p)
-        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-            <div class="flex justify-between items-start">
-                <div>
-                    <span class="inline-block px-2.5 py-1 text-xs font-bold bg-blue-50 text-blue-800 border border-blue-100 rounded-md capitalize mb-2">
-                        Target: {{ $p->target }}
+        <div class="bg-white p-4 rounded-xl border border-gray-150 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+            <div class="space-y-2">
+                <div class="flex justify-between items-start gap-1">
+                    <div class="flex flex-wrap gap-1">
+                        <span class="inline-block px-2 py-0.5 text-[9px] font-bold bg-blue-50 text-blue-800 border border-blue-100 rounded uppercase">
+                            Target: {{ $p->target }}
+                        </span>
+                        @if ($p->prodi)
+                        <span class="inline-block px-2 py-0.5 text-[9px] font-bold bg-green-50 text-green-800 border border-green-100 rounded truncate max-w-[120px]" title="Prodi: {{ $p->prodi->nama }}">
+                            {{ $p->prodi->nama }}
+                        </span>
+                        @endif
+                    </div>
+                    <span class="text-[10px] font-bold {{ $p->is_aktif ? 'text-green-600' : 'text-red-600' }}">
+                        ● {{ $p->is_aktif ? 'Aktif' : 'Nonaktif' }}
                     </span>
-                    @if ($p->prodi)
-                    <span class="inline-block px-2.5 py-1 text-xs font-bold bg-green-50 text-green-800 border border-green-100 rounded-md mb-2 ml-1">
-                        Prodi: {{ $p->prodi->nama }}
-                    </span>
-                    @endif
-                    <h2 class="text-xl font-bold text-gray-900">{{ $p->judul }}</h2>
-                    <p class="text-xs text-gray-400 mt-1">Diterbitkan oleh: {{ $p->user->name }} | {{ $p->created_at->format('d M Y H:i') }}</p>
                 </div>
-                <div class="flex space-x-2">
-                    <button type="button" onclick="openEditModal({{ json_encode($p) }})" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 p-2 rounded-lg text-xs font-bold transition">
+                
+                <h3 class="text-sm font-bold text-gray-900 leading-snug" title="{{ $p->judul }}">{{ $p->judul }}</h3>
+                <p class="text-[10px] text-gray-400">Oleh: {{ $p->user->name }} | {{ $p->created_at->format('d/m/Y H:i') }}</p>
+                
+                <div class="text-xs text-gray-650 leading-relaxed border-t border-gray-150 pt-2 whitespace-pre-line">
+                    {!! $p->isi !!}
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-450">
+                <div class="flex flex-col">
+                    <span>Mulai: {{ $p->tanggal_aktif ? $p->tanggal_aktif->format('d/m/Y') : 'Langsung' }}</span>
+                    <span>Akhir: {{ $p->tanggal_expired ? $p->tanggal_expired->format('d/m/Y') : 'Selamanya' }}</span>
+                </div>
+                <div class="flex gap-1.5">
+                    <button type="button" onclick="openEditModal({{ json_encode($p) }})" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 text-yellow-800 px-2 py-1 rounded text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
                         <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Edit</span>
                     </button>
-                    <button type="button" onclick="confirmDelete({{ $p->id }}, '{{ $p->judul }}')" class="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-lg text-xs font-bold transition">
+                    <button type="button" onclick="confirmDelete({{ $p->id }}, '{{ $p->judul }}')" class="bg-red-50 hover:bg-red-100 border border-red-200 text-red-800 px-2 py-1 rounded text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
                         <i class="fa-solid fa-trash-can"></i>
+                        <span>Hapus</span>
                     </button>
                 </div>
-            </div>
-            <div class="text-gray-700 text-sm whitespace-pre-line border-t border-gray-50 pt-3">
-                {!! $p->isi !!}
-            </div>
-            <div class="text-xs text-gray-400 flex space-x-4">
-                <span>Mulai: {{ $p->tanggal_aktif ? $p->tanggal_aktif->format('d/m/Y') : 'Langsung' }}</span>
-                <span>Berakhir: {{ $p->tanggal_expired ? $p->tanggal_expired->format('d/m/Y') : 'Selamanya' }}</span>
-                <span>Status: <strong class="{{ $p->is_aktif ? 'text-green-600' : 'text-red-600' }}">{{ $p->is_aktif ? 'Aktif' : 'Nonaktif' }}</strong></span>
             </div>
         </div>
         @empty
-        <div class="bg-white p-8 text-center text-gray-400 rounded-2xl border border-gray-100 shadow-sm">
-            Tidak ada pengumuman yang diterbitkan.
+        <div class="col-span-full bg-white p-8 text-center text-gray-400 rounded-xl border border-gray-100 shadow-sm">
+            <i class="fa-solid fa-bullhorn text-4xl mb-3 text-gray-300"></i>
+            <p class="text-xs">Tidak ada pengumuman yang diterbitkan.</p>
         </div>
         @endforelse
     </div>
